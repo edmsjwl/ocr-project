@@ -1,0 +1,359 @@
+<!--
+  DESIGN.md / CLAUDE.md 기반 디자인 시스템 검증용 테스트 화면
+
+  포함: Heading/Body Text, Primary/Secondary Button, Text Input(Textfield),
+        Badge(Content-Badge), Tabs(Tab-menu), Card(Card-Item/Receipt)
+
+  제외 (사용자 확인 완료):
+    - Select  : DESIGN.md에 범용 Select/Dropdown 컴포넌트 정의 없음
+                (Date-picker/Selectbox는 날짜 전용 컴포넌트로 구조가 다름)
+    - Dialog  : DESIGN.md에 중앙 정렬 Dialog/Modal 정의 없음
+                (Bottom-sheet만 문서화되어 있고 구조가 다름)
+
+  값 출처 표기 규칙:
+    - 주석 없음        → DESIGN.md에 raw px 또는 hex로 명시된 확정값
+    - "추정값" 주석     → Padding/N, Radius/N 명명 규칙(토큰명=px값)에 근거한 추정값.
+                          DESIGN.md 자체가 이 규칙의 실제 px를 표로 확정하지 않았으므로
+                          Figma 재확인 필요
+    - 생략된 border    → Color/line/normal/neutral 등 hex 값이 DESIGN.md에 없어
+                          임의 색상을 넣지 않고 테두리 자체를 생략함
+-->
+<title>SBS OCR 디자인 시스템 테스트</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root {
+    /* ---- Color / Common ---- */
+    --common-0: #ffffff;
+    --common-100: #000000;
+
+    /* ---- Color / Neutral ---- */
+    --neutral-80: #474747;
+    --neutral-90: #1f1f1f;
+
+    /* ---- Color / Cool Neutral ---- */
+    --cool-neutral-15: #ebeef0;
+    --cool-neutral-50: #9daab3;
+    --cool-neutral-60: #8495a0;
+    --cool-neutral-90: #262d32;
+
+    /* ---- Color / Clear Blue ---- */
+    --clear-blue-10: #dbeefe;
+    --clear-blue-60: #2a7fec;
+
+    /* ---- Color / Red ---- */
+    --red-50: #fb2c36;
+
+    /* ---- Color / Semantic (DESIGN.md 컴포넌트 섹션에 hex가 명시된 것만 매핑) ---- */
+    --color-foreground-brand-normal: var(--clear-blue-60);      /* #2a7fec */
+    --color-label-brand-normal: var(--clear-blue-60);           /* #2a7fec */
+    --color-line-brand-blue: var(--clear-blue-60);              /* #2a7fec */
+    --color-primary-normal: var(--clear-blue-60);               /* #2a7fec */
+    --color-primary-subtle: var(--clear-blue-10);                /* #dbeefe */
+
+    --color-label-primary-normal: var(--cool-neutral-90);        /* #262d32 */
+    --color-label-primary-disabled: var(--cool-neutral-50);      /* #9daab3 */
+    --color-label-secondary-weak: var(--cool-neutral-50);        /* #9daab3 */
+    --color-label-secondary-selected: var(--cool-neutral-60);    /* #8495a0 */
+    --color-label-tertiary-normal: var(--neutral-80);            /* #474747, Search-bar-lined에서 확인 */
+
+    --color-background-bg-secondary: var(--common-0);            /* white, Status-bar에서 확인 */
+    --color-background-bg-inverse: var(--neutral-80);            /* #474747 */
+    --color-foreground-secondary-white: #fafafa;                 /* Textfield에서 확인 */
+    --color-foreground-disabled-subtle: var(--cool-neutral-15);  /* #ebeef0 */
+
+    --color-status-warning-normal: var(--red-50);                /* #fb2c36 */
+    --color-status-progress-subtle: #fff3e6;                     /* raw hex, Content-Badge에서 확인 */
+    --color-status-progress-normal: #e87500;                     /* raw hex, Content-Badge에서 확인 */
+
+    --color-static-white: var(--common-0);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 40px 24px 80px;
+    background: var(--cool-neutral-15);
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    color: var(--color-label-primary-normal);
+  }
+
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  section > h2.section-label {
+    /* Caption02/Semibold(12/18) — 섹션 구분용, DESIGN.md Typography 표 기준 */
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+    letter-spacing: -0.2px;
+    color: var(--color-label-secondary-weak);
+    margin: 0 0 12px;
+    text-transform: uppercase;
+  }
+
+  /* ---------------------------------------------------------
+     1. Typography — Heading02/Semibold, Body04/Regular
+     --------------------------------------------------------- */
+  .heading02-semibold {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 34px;
+    letter-spacing: -0.4px;
+    color: var(--color-label-primary-normal);
+    margin: 0 0 8px;
+  }
+
+  .body04-regular {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: -0.3px;
+    color: var(--color-label-tertiary-normal);
+    margin: 0;
+  }
+
+  /* ---------------------------------------------------------
+     2. Button — Button-solid(165:19718), Large / Primary·Assistive
+     --------------------------------------------------------- */
+  .button-row { display: flex; gap: 12px; }
+
+  .btn {
+    height: 56px; /* raw px, DESIGN.md 확정값 */
+    padding: 14px 28px; /* Padding/14, Padding/28 — 추정값, Figma 재확인 필요 */
+    border-radius: 14px; /* Radius/14 — 추정값, Figma 재확인 필요 */
+    font-size: 16px;
+    font-weight: 600; /* Body04/Semibold */
+    line-height: 24px;
+    letter-spacing: -0.3px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: var(--color-foreground-brand-normal);
+    color: var(--color-static-white);
+  }
+
+  .btn-secondary {
+    background: var(--common-0);
+    color: var(--color-label-brand-normal);
+    border: 1px solid var(--color-line-brand-blue);
+  }
+
+  /* ---------------------------------------------------------
+     3. Text Input — Textfield(165:18907)
+     border: Color/line/normal/neutral hex 미확인 → 생략
+     --------------------------------------------------------- */
+  .field { display: flex; flex-direction: column; gap: 8px; /* Padding/8, 추정값 */ max-width: 335px; }
+
+  .field-label {
+    font-size: 14px;
+    font-weight: 500; /* Body06/Medium */
+    line-height: 20px;
+    letter-spacing: -0.3px;
+    color: var(--color-label-tertiary-normal);
+  }
+
+  .field-label .required {
+    color: var(--color-status-warning-normal);
+  }
+
+  .field-input {
+    height: 56px; /* raw px, DESIGN.md 확정값 */
+    padding: 12px; /* Padding/12 — 추정값, Figma 재확인 필요 */
+    border-radius: 16px; /* Radius/16 — 추정값, Figma 재확인 필요 */
+    background: var(--color-foreground-secondary-white);
+    font-size: 16px;
+    font-weight: 400; /* Body04/Regular */
+    line-height: 24px;
+    letter-spacing: -0.3px;
+    color: var(--color-label-primary-normal);
+    border: none; /* Color/line/normal/neutral hex 미정의로 테두리 생략 */
+  }
+
+  .field-input::placeholder {
+    color: var(--color-label-primary-disabled);
+  }
+
+  /* ---------------------------------------------------------
+     4. Badge — Content-Badge(324:9396)
+     --------------------------------------------------------- */
+  .badge-row { display: flex; gap: 8px; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px; /* Padding/3, Padding/10 — 추정값, Figma 재확인 필요 */
+    border-radius: 6px; /* Radius/6 — 추정값, Figma 재확인 필요 */
+    font-size: 14px;
+    font-weight: 700; /* Body06/Bold */
+    line-height: 20px;
+    letter-spacing: -0.3px;
+  }
+
+  .badge-blue { background: var(--color-primary-subtle); color: var(--color-primary-normal); }
+  .badge-gray { background: var(--color-foreground-disabled-subtle); color: var(--color-label-secondary-selected); }
+  .badge-orange { background: var(--color-status-progress-subtle); color: var(--color-status-progress-normal); }
+
+  /* ---------------------------------------------------------
+     5. Tabs — Tab-menu(207:11114) / Tab-item(207:11372)
+     Default 상태 border: Color/line/normal/neutral hex 미확인 → 생략(투명 처리)
+     --------------------------------------------------------- */
+  .tab-menu { display: flex; }
+
+  .tab-item {
+    height: 40px; /* raw px, DESIGN.md 확정값 */
+    width: 75px; /* raw px, DESIGN.md 확정값 */
+    padding: 8px 18px; /* Padding/8, Padding/18 — 추정값, Figma 재확인 필요 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700; /* Body04/Bold */
+    line-height: 24px;
+    letter-spacing: -0.3px;
+    color: var(--color-label-primary-disabled);
+    border-bottom: 1px solid transparent; /* Color/line/normal/neutral hex 미정의로 색상 생략 */
+    background: none;
+    cursor: pointer;
+  }
+
+  .tab-item.is-active {
+    color: var(--color-label-primary-normal);
+    border-bottom: 2px solid var(--color-background-bg-inverse);
+  }
+
+  /* ---------------------------------------------------------
+     6. Card — Card-Item/Receipt(324:9696)
+     border: Color/line/normal/alternative hex 미확인 → 생략
+     --------------------------------------------------------- */
+  .receipt-card {
+    background: var(--color-background-bg-secondary);
+    padding: 14px 16px; /* Padding/14, Padding/16 — 추정값, Figma 재확인 필요 */
+    border-radius: 14px; /* Radius/14 — 추정값, Figma 재확인 필요 */
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Padding/12 — 추정값, Figma 재확인 필요 */
+    max-width: 335px;
+  }
+
+  .receipt-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .receipt-merchant {
+    font-size: 16px;
+    font-weight: 500; /* Body04/Medium */
+    line-height: 24px;
+    letter-spacing: -0.3px;
+    color: var(--color-label-primary-normal);
+    margin: 0 0 4px;
+  }
+
+  .receipt-amount {
+    font-size: 16px;
+    font-weight: 700; /* Body04/Bold */
+    line-height: 24px;
+    letter-spacing: -0.3px;
+    color: var(--color-label-primary-normal);
+    margin: 0;
+  }
+
+  .receipt-date {
+    font-size: 14px;
+    font-weight: 500; /* Body06/Medium */
+    line-height: 20px;
+    letter-spacing: -0.3px;
+    color: var(--color-label-secondary-weak);
+  }
+
+  .note {
+    font-size: 12px;
+    font-weight: 400; /* Caption02/Regular */
+    line-height: 18px;
+    letter-spacing: -0.2px;
+    color: var(--color-label-secondary-weak);
+    background: var(--common-0);
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  .note ul { margin: 8px 0 0; padding-left: 18px; }
+</style>
+
+<main>
+
+  <section class="note">
+    이 화면은 <strong>DESIGN.md</strong> 기준으로 검증 가능한 6개 요소만 구현했습니다.
+    <ul>
+      <li>Select, Dialog는 DESIGN.md에 해당 컴포넌트 정의가 없어 제외했습니다.</li>
+      <li>"추정값" 주석이 붙은 padding/radius는 Padding/N·Radius/N 명명 규칙(토큰명=px값)에 근거한 값으로, Figma 원본 재확인이 필요합니다.</li>
+      <li>hex 값이 DESIGN.md에 없는 border(Textfield, Card, Tab Default)는 임의 색상 대신 생략 처리했습니다.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="section-label">Typography — Heading02/Semibold, Body04/Regular</h2>
+    <h1 class="heading02-semibold">개인카드 영수증 조회</h1>
+    <p class="body04-regular">등록된 영수증을 조회하고 전표 처리 업무로 연결합니다.</p>
+  </section>
+
+  <section>
+    <h2 class="section-label">Button — Button-solid(165:19718), Large</h2>
+    <div class="button-row">
+      <button class="btn btn-primary">전표 생성</button>
+      <button class="btn btn-secondary">취소</button>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-label">Text Input — Textfield(165:18907)</h2>
+    <div class="field">
+      <label class="field-label">가맹점명 <span class="required">*</span></label>
+      <input class="field-input" type="text" placeholder="가맹점명을 입력하세요">
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-label">Badge — Content-Badge(324:9396)</h2>
+    <div class="badge-row">
+      <span class="badge badge-blue">완료</span>
+      <span class="badge badge-gray">처리중</span>
+      <span class="badge badge-orange">작성중</span>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-label">Tabs — Tab-menu(207:11114)</h2>
+    <div class="tab-menu">
+      <button class="tab-item is-active">전체</button>
+      <button class="tab-item">완료</button>
+      <button class="tab-item">처리중</button>
+      <button class="tab-item">작성중</button>
+      <button class="tab-item">중복</button>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-label">Card — Card-Item/Receipt(324:9696)</h2>
+    <div class="receipt-card">
+      <div class="receipt-card-top">
+        <div>
+          <p class="receipt-merchant">스타벅스 강남역점</p>
+          <span class="receipt-date">2026.08.29</span>
+        </div>
+        <span class="badge badge-blue">완료</span>
+      </div>
+      <p class="receipt-amount">12,500원</p>
+    </div>
+  </section>
+
+</main>
