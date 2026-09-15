@@ -1,377 +1,206 @@
 # Design Tokens
 
-> 출처: Figma "🔵 디자인시스템" 페이지
-> https://www.figma.com/design/ese9l01OJiDfirO8Q6XXIY/-SBS--OCR-프로젝트_디자인
+> 출처: Figma `[SBS] OCR 프로젝트_디자인` 파일 "🔵 디자인시스템" 페이지 (node 39:2)
+> https://www.figma.com/design/ese9l01OJiDfirO8Q6XXIY/-SBS--OCR-프로젝트_디자인?node-id=39-2
 >
-> 아래 값은 Figma `get_variable_defs`로 조회한 실제 variable name/value 그대로이며, 임의로 생성한 값은 없습니다.
-> **Color Token-Atomic / Color Token-Semantic 섹션은 미완성 상태라 제외했습니다.** 완성되는 대로 추가 반영 예정입니다.
+> 이 문서는 2026-09-14에 Figma를 `get_metadata` / `get_variable_defs` / `get_design_context` / `get_screenshot`로 다시 조회해 **전면 재작성**했다. 이전 버전(2025-08-19 작성)과 비교했을 때 색상 토큰 체계, 타이포그래피 수치, 컴포넌트 구성이 상당히 달라졌다. 아래 값은 실제로 조회한 결과 그대로이며, 임의로 생성한 값은 없다.
 
-## Color
+## 0. 지난 버전 대비 주요 변경 사항
 
-Figma "Color" 섹션(node 50:609)에서 추출한 primitive color 값입니다.
+- **Color 토큰 체계가 완전히 새로 생겼다.** 이전 버전에서 "미완성이라 제외"했던 `Color Token-Atomic`, `Color Token-Semantic` 페이지가 이제 채워져 있고, **Light/Dark 모드가 모두 존재**한다.
+- **Cool Neutral 램프와 Red 램프의 실제 값이 바뀌었다.** 같은 토큰 이름이라도 8월 문서의 hex와 지금 hex가 다르다 (§1.4 참고).
+- **Typography 수치가 바뀌었다.** Line-height/letter-spacing이 전반적으로 조정됐고, 8월 버전에 있던 이상값(Heading02=Heading03 크기 중복, Caption 일부 line-height 튐)이 해소됐다.
+- **새 컴포넌트 확보:** `Modal`(그동안 없던 Dialog/Modal), `Progress-bar`, `Program-select`/`Dropdown-item`(그동안 없던 Select/Dropdown), `Elevation`(그림자 토큰) — 이전 문서와 `design-system-test.html`이 "정의 없어 제외"라고 명시했던 Select/Dialog 공백이 채워졌다.
+- Figma 페이지 구성 자체가 바뀌어, 이 문서의 목차도 Figma 최상위 프레임 이름(Layout / Button / Textfield / Check-box / Date-picker / Bottom-sheet / Badge / Card / Image-input / Elevation / Progress / Modal-Tooltip / Action-Area) 순서를 그대로 따르도록 재구성했다.
 
-### Common
-| Variable | Value |
+## 1. Color
+
+### 1.1 Atomic (원시값) — `Color Token-Atomic` (node 55:2157)
+
+| 그룹 | 토큰 | 값 |
+|---|---|---|
+| Common | color-atomic-common-0 / 100 | #FFFFFF / #000000 |
+| Cool Neutral | color-atomic-cool-neutral-5~100 | 5:#F7F8F9 10:#F1F3F4 15:#EBEEF0 20:#DEE3E7 30:#CDD3D7 40:#BABEC2 50:#A2A9AE 60:#8C9499 70:#575E62 80:#434648 90:#222426 100:#191A1B |
+| Clear Blue(브랜드) | color-atomic-brand-clearblue-5~90 | 5:#EFF8FF 10:#DBEEFE 20:#BEE2FF 30:#93D2FD 40:#60B8FA 50:#3B99F6 **60:#2A7FEC(key color)** 70:#1D65D8 80:#1E52AF 90:#1E488A |
+| Sky Blue(state) | color-atomic-skyBlue-5~90, A10~A40 | 5:#E1F5FE 10:#B3E5FC 20:#81D4FA 30:#4FC3F7 40:#29B6F6 50:#03A9F4 60:#039BE5 70:#0288D1 80:#0277BD 90:#01579B / A10:#80D8FF A20:#40C4FF A30:#00B0FF A40:#0091EA |
+| Green(state) | color-atomic-green-5~90, A10~A40 | 5:#E8F5E9 10:#C8E6C9 20:#A5D6A7 30:#81C784 40:#66BB6A 50:#4CAF50 60:#43A047 70:#388E3C 80:#2E7D32 90:#1B5E20 / A10:#B9F6CA A20:#69F0AE A30:#00E676 A40:#00C853 |
+| Red(state) | color-atomic-red-5~90, A10~A40 | 5:#FFEBEE 10:#FFCDD2 20:#EF9A9A 30:#E57373 40:#EF5350 50:#F44336 60:#E53935 70:#D32F2F 80:#B71C1C 90:#82181A / A10:#FF8A80 A20:#FF5252 A30:#FF1744 A40:#D50000 |
+
+### 1.2 Semantic (의미값) — Light — `Color Token-Semantic (의미값) Light` (node 97:1313)
+
+의미 토큰은 모두 위 Atomic 토큰을 참조한다. `→` 뒤가 실제 바인딩된 atomic 토큰이다.
+
+| 그룹 | 토큰 | → Atomic |
+|---|---|---|
+| Static | static-white / static-black | common-0 / cool-neutral-100 |
+| Background | bg-primary / bg-secondary / bg-alternative / bg-inverse / bg-inverse-strong | cool-neutral-5 / common-0 / cool-neutral-10 / cool-neutral-80 / cool-neutral-90 |
+| Foreground-normal | fg-normal / fg-selected / fg-weak / fg-disabled-normal / fg-disabled-subtle | cool-neutral-5 / -15 / -10 / -30 / -15 |
+| Foreground-brand | fg-brand-normal / fg-brand-selected / fg-brand-disabled / fg-brand-secondary-selected / fg-brand-secondary-disabled | clearBlue-60 / clearBlue-80 / cool-neutral-20 / clearBlue-5 / cool-neutral-10 |
+| Label(brand) | label-brand-normal / -selected / -weak / -disabled | clearBlue-60 / -40 / -20 / cool-neutral-20 |
+| Label(primary) | label-primary-normal / -selected / -alternative / -weak / -disabled | cool-neutral-90 / -70 / -50 / -40 / -60 |
+| Label(secondary) | label-secondary-normal / -selected / -weak / -disabled | cool-neutral-80 / -60 / -50 / -40 |
+| Label(기타) | label-inverse | common-0 |
+| Status(pending·안내) | status-pending-normal / -strong / -subtle | skyBlue-50 / skyBlue-60 / skyBlue-5-opacity-64 |
+| Status(processing·진행) | status-processing-normal / -strong / -subtle | green-60 / green-70 / green-5-opacity-64 |
+| Status(completed·완료) | status-completed-normal / -strong / -subtle | cool-neutral-60 / -80 / cool-neutral-10-opacity-72 |
+| Status(rejected·반려·오류) | status-rejected-normal / -strong / -subtle | red-50 / red-60 / red-5-opacity-64 |
+| Line(brand) | line-brand-normal / -neutral / -alternative / -strong | clearBlue-60 (opacity 0/16/8/56%) |
+| Line(normal) | line-normal / -neutral / -alternative / -strong | cool-neutral-70 (opacity 24/16/8/80%) |
+| Material | dimmer-weak / -normal / -strong | common-100(black) (opacity 32/56/80%) |
+
+> Status 토큰 이름은 pending(대기)/processing(처리중)/completed(완료)/rejected(반려)로, `CLAUDE.md`의 "디자인 도메인 규칙"에 채워 넣을 영수증 상태(전체/완료/처리중/작성중/중복)와 1:1로 대응하지 않는다. 실제 매핑은 Figma 컴포넌트에서 재확인이 필요하다 — 임의로 대응시키지 않았다.
+>
+> ⚠️ **구현 시 주의:** 위 표에서 "(opacity N%)"가 붙은 행(Line-brand, Line-normal, Material, Status의 -subtle)은 단색이 아니라 원본 atomic 색에 그 %만큼 불투명도를 얹은 값이다. Figma MCP(`get_design_context`)가 주는 참조 코드의 CSS 변수 fallback hex(예: `var(--color/line/normal/normal,#575e62)`)는 이 불투명도를 반영하지 않은 **원색 그대로**라서, 그대로 갖다 쓰면 실제보다 훨씬 진하게 나온다. 코드로 옮길 때는 반드시 `rgba(원색, opacity)` 형태로 변환할 것 — 실제로 이 문제로 `screen-phone-auth.html`의 Textfield 테두리가 과하게 진하게 나온 적이 있다.
+
+### 1.3 Semantic (의미값) — Dark — `Color Token-Semantic (의미값) Dark` (node 2098:83095)
+
+Light와 동일한 토큰 이름 구조를 그대로 쓰고, atomic 매핑만 다르다(예: `bg-primary` → cool-neutral-**100**, `label-primary-normal` → cool-neutral-**5**, `fg-brand-normal` → clearBlue-**50**). 다크모드 구현 계획이 생기면 이 표를 전체 옮겨 적을 것 — 현재는 Light 모드만 실제 컴포넌트에 쓰이고 있어 전체 로우를 옮기지 않았다.
+
+### 1.4 ⚠️ 참고 — "Color" 원시 스와치 페이지(node 50:609)와의 불일치
+
+Figma에는 위 `Color Token-Atomic`과 별도로 스와치 형태의 "Color" 페이지(50:609)가 있다. 같은 토큰 이름인데 값이 다르다 — 예: `Cool-Neutral/20`이 "Color" 페이지에는 `#D7DCE0`로 표시되지만 `Color Token-Atomic`과 실제 `get_variable_defs` 바인딩 값은 `#DEE3E7`이다. Cool Neutral 70~100, Red 램프 전체도 마찬가지로 다르다.
+
+실제 컴포넌트가 참조하는 값(`get_variable_defs`로 조회한 라이브 Variable 값)은 `Color Token-Atomic` 쪽과 일치하므로, **이 문서는 `Color Token-Atomic`을 기준으로 삼았다.** "Color" 페이지는 8월 이후 갱신되지 않은 것으로 보인다 — Figma에서 두 페이지 중 무엇을 유지할지 정리가 필요하다(디자이너 확인 요망).
+
+## 2. Typography
+
+Figma "Typography" 섹션(node 38:110) 기준. 폰트: `Pretendard`. 사이즈별로 Regular/Medium/SemiBold/Bold 4중량을 제공하며, 굵기와 무관하게 행간·자간은 동일하다.
+
+| Token | Size | Line Height | Letter Spacing |
+|---|---|---|---|
+| Display01 | 34 | 44 | -0.6 |
+| Display02 | 32 | 42 | -0.6 |
+| Display03 | 30 | 40 | -0.6 |
+| Heading01 | 28 | 38 | -0.5 |
+| Heading02 | 26 | 36 | -0.5 |
+| Heading03 | 24 | 34 | -0.5 |
+| Body01 | 22 | 32 | -0.4 |
+| Body02 | 20 | 28 | -0.4 |
+| Body03 | 18 | 26 | -0.4 |
+| Body04 | 16 | 24 | -0.3 |
+| Body05 | 15 | 22 | -0.3 |
+| Body06 | 14 | 20 | -0.3 |
+| Caption01 | 13 | 19 | -0.2 |
+| Caption02 | 12 | 18 | -0.2 |
+| Caption03 | 11 | 16 | -0.2 |
+
+> 8월 버전에 있던 이상값 — Heading02/03가 둘 다 24px로 중복되던 것, Caption 일부(01/02/03 Bold 등)의 line-height가 38로 튀던 것 — 은 이번 조회에서 모두 해소되어 있다. 즉 Figma 쪽에서 정리된 것으로 보인다.
+
+## 3. Elevation (신규) — node 459:18953
+
+| 토큰 | 값 |
 |---|---|
-| Common/0 | #ffffff |
-| Common/100 | #000000 |
+| Shadow-Low | drop-shadow, color #8686860A, blur 3, spread 10, offset (0,0) |
+| Shadow-Medium | drop-shadow, color #86868652, blur 10, spread 0, offset (0,0) |
+| Shadow-Strong | drop-shadow, color #868686CC, blur 12, spread 0, offset (0,0) |
 
-### Neutral
-| Variable | Value |
-|---|---|
-| Neutral/10 | #f0f0f0 |
-| Neutral/15 | #e3e3e3 |
-| Neutral/20 | #d1d1d1 |
-| Neutral/30 | #bfbfbf |
-| Neutral/40 | #a3a3a3 |
-| Neutral/50 | #919191 |
-| Neutral/60 | #7b7b7b |
-| Neutral/70 | #686868 |
-| Neutral/80 | #474747 |
-| Neutral/90 | #1f1f1f |
-| Neutral/100 | #020202 |
+## 4. Icon — node 91:1111
 
-### Cool Neutral
-| Variable | Value |
-|---|---|
-| Cool Neutral/5 | #f7f8f9 |
-| Cool Neutral/10 | #f1f3f4 |
-| Cool Neutral/15 | #ebeef0 |
-| Cool Neutral/20 | #d7dce0 |
-| Cool Neutral/30 | #cdd3d7 |
-| Cool Neutral/40 | #b6c0c7 |
-| Cool Neutral/50 | #9daab3 |
-| Cool Neutral/60 | #8495a0 |
-| Cool Neutral/70 | #586873 |
-| Cool Neutral/80 | #45515a |
-| Cool Neutral/90 | #262d32 |
-| Cool Neutral/100 | #0b0d0e |
+UI 아이콘은 16 / 20 / 24 / 28px(h) 4단계, 삽화형 "Graphic" 아이콘은 24 / 32 / 48 / 64 / 84px 5단계로 구성되어 있다. 개별 아이콘 글리프 목록은 이 문서에 전부 옮기지 않았다 — 필요한 아이콘은 그때그때 Figma에서 `Icon/이름/사이즈` 규칙으로 조회한다.
 
-### Clear Blue
-| Variable | Value |
-|---|---|
-| Clear Blue/5 | #eff8ff |
-| Clear Blue/10 | #dbeefe |
-| Clear Blue/20 | #bee2ff |
-| Clear Blue/30 | #93d2fd |
-| Clear Blue/40 | #60b8fa |
-| Clear Blue/50 | #3b99f6 |
-| Clear Blue/60 | #2a7fec |
-| Clear Blue/70 | #1d65d8 |
-| Clear Blue/80 | #1e52af |
-| Clear Blue/90 | #1e488a |
-| Colors/clear blue/600 | #2a7fec |
+## 5. Layout — node 158:29966
 
-### Red
-| Variable | Value |
-|---|---|
-| Red/5 | #fef2f2 |
-| Red/10 | #ffe2e2 |
-| Red/20 | #ffc9c9 |
-| Red/30 | #ffa2a2 |
-| Red/40 | #ff6467 |
-| Red/50 | #fb2c36 |
-| Red/60 | #e7000b |
-| Red/70 | #c10007 |
-| Red/80 | #9f0712 |
+### Grid
+Figma에 `grid/16`, `grid/20` 두 개의 자리(빈 프레임)만 마련되어 있고, 컬럼 수·거터·마진 같은 실제 수치는 아직 채워지지 않았다. **확정된 그리드 스펙이 없다 — 임의로 만들지 않는다.**
 
-## Typography
+### Dimmed(Material)
+§1.2의 `dimmer-weak/normal/strong` 토큰(모두 common-100/검정 opacity 32/56/80%)을 오버레이 배경으로 쓰는 예시가 있다. 실제 정의는 §1.2 Material 항목을 따른다.
 
-Figma "Typography" 섹션(node 38:110)에서 추출한 텍스트 스타일입니다. 폰트: `Pretendard`.
+### Navigation / Chrome 컴포넌트
+아래는 Figma "Layout" 프레임 안에 있고, 현재 보류 상태가 아닌(확정) 컴포넌트다.
 
-| Token | Size | Weight | Style | Line Height | Letter Spacing |
-|---|---|---|---|---|---|
-| Display01/Regular | 34 | 400 | Regular | 38 | -0.5 |
-| Display01/Medium | 34 | 500 | Medium | 38 | -0.5 |
-| Display01/Semibold | 34 | 600 | SemiBold | 38 | -0.5 |
-| Display01/Bold | 34 | 700 | Bold | 38 | -0.5 |
-| Display02/Regular | 32 | 400 | Regular | 34 | -0.4 |
-| Display02/Medium | 32 | 500 | Medium | 34 | -0.4 |
-| Display02/Semibold | 32 | 600 | SemiBold | 34 | -0.4 |
-| Display02/Bold | 32 | 700 | Bold | 34 | -0.4 |
-| Display03/Regular | 30 | 400 | Regular | 34 | -0.4 |
-| Display03/Medium | 30 | 500 | Medium | 34 | -0.4 |
-| Display03/Semibold | 30 | 600 | SemiBold | 34 | -0.4 |
-| Display03/Bold | 30 | 700 | Bold | 34 | -0.4 |
-| Heading01/Regular | 28 | 400 | Regular | 38 | -0.5 |
-| Heading01/Medium | 28 | 500 | Medium | 38 | -0.5 |
-| Heading01/Semibold | 28 | 600 | SemiBold | 38 | -0.5 |
-| Heading01/Bold | 28 | 700 | Bold | 38 | -0.5 |
-| Heading02/Regular | 24 | 400 | Regular | 34 | -0.4 |
-| Heading02/Medium | 24 | 500 | Medium | 34 | -0.4 |
-| Heading02/Semibold | 24 | 600 | SemiBold | 34 | -0.4 |
-| Heading02/Bold | 24 | 700 | Bold | 34 | -0.4 |
-| Heading03/Regular | 24 | 400 | Regular | 34 | -0.4 |
-| Heading03/Medium | 24 | 500 | Medium | 34 | -0.4 |
-| Heading03/Semibold | 24 | 600 | SemiBold | 34 | -0.4 |
-| Heading03/Bold | 24 | 700 | Bold | 34 | -0.4 |
-| Body01/Regular | 22 | 400 | Regular | 32 | -0.4 |
-| Body01/Medium | 22 | 500 | Medium | 32 | -0.4 |
-| Body01/Semibold | 22 | 600 | SemiBold | 32 | -0.4 |
-| Body01/Bold | 22 | 700 | Bold | 32 | -0.4 |
-| Body02/Regular | 20 | 400 | Regular | 28 | -0.4 |
-| Body02/Medium | 20 | 500 | Medium | 28 | -0.4 |
-| Body02/Semibold | 20 | 600 | SemiBold | 28 | -0.4 |
-| Body02/Bold | 20 | 700 | Bold | 28 | -0.4 |
-| Body03/Regular | 18 | 400 | Regular | 20 | -0.3 |
-| Body03/Medium | 18 | 500 | Medium | 20 | -0.3 |
-| Body03/Semibold | 18 | 600 | SemiBold | 20 | -0.3 |
-| Body03/Bold | 18 | 700 | Bold | 20 | -0.3 |
-| Body04/Regular | 16 | 400 | Regular | 24 | -0.3 |
-| Body04/Medium | 16 | 500 | Medium | 24 | -0.3 |
-| Body04/Semibold | 16 | 600 | SemiBold | 24 | -0.3 |
-| Body04/Bold | 16 | 700 | Bold | 24 | -0.3 |
-| Body05/Regular | 15 | 400 | Regular | 22 | -0.3 |
-| Body05/Medium | 15 | 500 | Medium | 22 | -0.3 |
-| Body05/Semibold | 15 | 600 | SemiBold | 22 | -0.3 |
-| Body05/Bold | 15 | 700 | Bold | 22 | -0.3 |
-| Body06/Regular | 14 | 400 | Regular | 20 | -0.3 |
-| Body06/Medium | 14 | 500 | Medium | 20 | -0.3 |
-| Body06/Semibold | 14 | 600 | SemiBold | 20 | -0.3 |
-| Body06/Bold | 14 | 700 | Bold | 20 | -0.3 |
-| Caption01/Regular | 13 | 400 | Regular | 38 | -0.2 |
-| Caption01/Medium | 13 | 500 | Medium | 19 | -0.2 |
-| Caption01/Semibold | 13 | 600 | SemiBold | 19 | -0.2 |
-| Caption01/Bold | 13 | 700 | Bold | 19 | -0.2 |
-| Caption02/Regular | 12 | 400 | Regular | 18 | -0.2 |
-| Caption02/Medium | 12 | 500 | Medium | 18 | -0.2 |
-| Caption02/Semibold | 12 | 600 | SemiBold | 18 | -0.2 |
-| Caption02/Bold | 12 | 700 | Bold | 38 | -0.2 |
-| Caption03/Regular | 11 | 400 | Regular | 16 | -0.2 |
-| Caption03/Medium | 11 | 500 | Medium | 16 | -0.2 |
-| Caption03/Semibold | 11 | 600 | SemiBold | 16 | -0.2 |
-| Caption03/Bold | 11 | 700 | Bold | 38 | -0.2 |
+**Status-bar** (161:30744) — Layout: h 44px(raw). Variant: `background` = Alternative | Secondary | Primary | Transparent, `label` = Black | White.
 
-> Caption01/Regular, Caption02/Bold, Caption03/Bold의 Line Height(38)는 같은 그룹 내 다른 항목과 값이 튀지만, Figma 원본 그대로입니다.
+**Home-bar** (164:30923) — Variant: `background` = Alternative | Secondary | Transparent.
 
-## Components
+**Header** (166:3969) — h 56px 대. 다수 variant(Home/Back/Menu/Search 등) 보유.
 
-Figma "디자인시스템" 페이지의 Main Component / Component Set을 `get_metadata`로 목록화한 뒤 `get_design_context`로 실제 정의를 조회한 결과입니다. Instance가 아닌 Main Component 기준이며, 존재하지 않는 variant/state는 추가하지 않았습니다. Variant 수가 많아 context 제한에 걸린 컴포넌트(Button-solid, Header, Textfield, Textarea, Textinput/Textarea, Bottom-sheet)는 대표 variant 1~2개를 조회해 구조/토큰을 확인했습니다.
+**Tab-item** (207:11372) / **Tab-menu** (207:11114) — Tab-item을 여러 개 배치해 구성.
 
-값 표기 규칙: `--color/xxx,#hex` 처럼 Figma variable에 바인딩된 값은 토큰명을 그대로 적고, 토큰이 아닌 raw px/hex 값은 "(raw)"로 표시했습니다.
+**Page-Title/large** (175:8777) — Symbol variant로 존재. 세부 padding/typography는 8월 버전 기록(px `Padding/24` py `Padding/16`, 타이틀 Body01/Semibold)을 참고하되, 색상 hex는 §1.2 시맨틱 표 기준으로 다시 확인할 것.
 
-### 1. Navigation / Chrome
+## 6. Button — node 165:19713
 
-**Status-bar** (161:30744)
-- Variant properties: `background` = Gray | White | Transparent, `label` = Black | White
-- Layout: h 44px(raw), Time/Status 영역 padding raw px
-- Color: bg `Color/Background/Bg-secondary`(white, White) / `Color/Background/Bg-alternative`(#f1f3f4, Gray) / 배경 없음(Transparent). 텍스트 `Color/Label/inverse/inverse`(white) 또는 `Semantic/Label/Strong`(black)
-- Typography: SF Pro Semibold 15px(raw, iOS 시스템 폰트 — Pretendard 아님)
+**Button-solid** — Variant: `Color` = Primary | Assistive, `Variant` = Solid | Outlined, `Size` = Large | Medium | Small | **Xsmall(신규)**, `State` = Normal | Selected | Disabled.
+- Xsmall 실측(1756:45131): h 34px, px `Padding/14` py `Padding/8`, radius `Radius/10`, icon 16px, gap 4px(raw), 텍스트 Body06/Semibold(14/20).
+- Large/Medium/Small의 padding·radius·아이콘 크기는 8월 버전 기록과 구조상 동일 확인(h 56/48/40, radius 14/12/10 등) — 정확한 hex만 §1.2 기준으로 다시 참조할 것.
+- Primary/Solid bg는 `color-semantic-fg-brand-normal`(clearBlue-60, #2A7FEC) — 이 값은 8월 이후 변하지 않았다.
 
-**Home-bar** (164:30923)
-- Variant properties: `background` = Gray | White | Transparent
-- Layout: padding pb 6 / pt 16 / px 10 (raw), Slider radius 4px(raw)
-- Color: bg `Color/Background/Bg-secondary`(White) / `Color/Background/Bg-alternative`(#f1f3f4, Gray) / 없음(Transparent). Slider bg `Color/Background/Bg-inverse`(#474747)
+**Button-icon** (165:20132) — Variant: `color` = Assistive | Primary, `shape` = Box | Round, `size` = Large | Medium | Small, `state` = Normal | Selected | Disabled. 구조는 8월 기록과 동일 확인.
 
-**Navigation-menu/Item** (166:4835)
-- Variant properties: `status` = Default | Disabled
-- Layout: gap 4px(raw), width 125px
-- Typography: Caption01/Bold(13/19)
-- Color: Default `Color/Label/quaternary/normal`(#474747), Disabled `Color/Label/Primary/disabled`(#9daab3)
-- Nested: Icon/home/solid/24
+**Button-text** (183:19951) — Variant: `size` = XS | S | M | L, `status` = Normal | Disabled | **Alternative(신규 확인)**, leading/trailing icon 옵션.
 
-**Navigation-menu/Item-blue** (354:25223)
-- Navigation-menu/Item과 동일 구조, 색상만 브랜드 블루로 대체: Default `Color/Label/brand/normal`(#2a7fec, Bold), Disabled `Color/Label/Primary/disabled`(#9daab3, SemiBold)
+## 7. Textfield — node 165:18856
 
-**Navigation-bar** (166:4941)
-- Variant properties: `Property 1` = Home | Receipt
-- Layout: navigation-bar row padding pt `Padding/10` pb `Padding/8` px `Padding/16`; border `Color/Line/Normal/Alternative`; Receipt 선택 시 상단 radius `Radius/28`
-- Color: row bg `Color/Background/Bg-secondary`, 컨테이너 bg `Color/Background/Bg-primary`
-- Nested: Navigation-menu/Item × 2, Home-bar
+**Textfield** (165:18907) — 구조는 8월 기록과 동일 확인(Status/Active/Focus/Disable/Trailing Button variant, h 56px, radius `Radius/16`). 색상은 §1.2 기준 재확인 필요.
 
-**Navigation-bar-blue** (354:25230)
-- Navigation-bar와 동일 구조, 내부 아이템이 Navigation-menu/Item-blue로 대체, 상단 radius `Radius/28` 항상 적용
+**Textinput-Resource-textfield-button** (165:18863), **Textinput-Resource-Textfield-Trailing Content** (165:18896) — 8월 기록과 구조 동일 확인.
 
-**Tab-item** (207:11372)
-- Variant properties: `Property 1` = Default | Activated, boolean `dot`
-- Layout: h 40px, w 75px, px `Padding/18` py `Padding/8`; Activated는 border-bottom 2px + gap `Padding/2`, Default는 border-bottom 1px + gap `Padding/4`
-- Typography: Body04/Bold(16/24)
-- Color: Activated `Color/Label/Primary/normal`(#262d32) / border `Color/Background/Bg-inverse`; Default `Color/Label/Primary/disabled`(#9daab3) / border `Color/Line/Normal/Neutral`
+**Program-select** (635:15003, 신규) — 그동안 없던 **Select/Dropdown류 컴포넌트**.
+- `state` = Close | open | Dropdown-list.
+- Close/open: 라벨(Body05/Bold 15/22, `color-semantic-label-secondary-normal`) + 필수 표시(`*`, 빨강) + Input(h 56px, radius `Radius/16`, border `color-semantic-line-normal-normal`(닫힘) / `color-semantic-fg-brand-normal`(열림)) + chevron-down/up 아이콘.
+- Dropdown-list: 위 Input 아래로 목록(테두리 `color-semantic-fg-brand-normal`, radius `Radius/16`, h 256px, 스크롤바 포함).
 
-**Tab-menu** (207:11114)
-- Variant properties: `Property 1` = 전체 | 완료 | 처리중 | 작성중 | 중복
-- Layout/구조: Tab-item 5개를 가로 배치, `Property 1` 값에 해당하는 항목만 Activated 스타일 적용
+**Dropdown-item** (1084:30439, 신규) — Program-select의 목록 한 줄. `status` = Dropdown-item-default | -pressed | -selected. h 56px, padding `Padding/12`. selected/pressed는 bg `color-atomic-brand-clearblue-5`(#EFF8FF), 텍스트는 default가 `label-primary-weak`, pressed가 `label-primary-disabled`, selected가 `label-primary-normal`.
 
-**Header** (166:3969) — 19개 variant 중 대표(Type=Home, Background=Default, Label=Default) 조회
-- Variant properties: `type` = Home | Home-toggle | Back | Menu | Close-Title-center | Colse-Title-left(원본 오타) | Search | Menu-Search | Menu-Search-activated, `background` = Default | White | Transparent, `label` = Default | Disabled | White
-- Layout: h 56px, px `Padding/20` py `Padding/16`
-- Color: bg `Color/Background/Bg-alternative`(#f1f3f4). Logo 배지 bg `Color/Foreground/normal(coolNeutral)/normal(cool-neutral)-selected`(#ebeef0), h 32px, padding 10px(raw)
-- Typography: Body05/Semibold(15/22), 색 `Color/Label/quaternary/selected`(#686868)
-- Nested: Icon/user/24
+## 8. Check-box — node 364:10667
 
-**Page-Title** (175:8777, 상위 wrapper `_Group Row Component` 158:30069)
-- Boolean properties: `description`
-- Layout: px `Padding/24` py `Padding/16` gap `Padding/6`
-- Typography: 타이틀 Body01/Semibold(22/32) `Color/Label/Primary/normal`(#262d32), 설명 Body04/Medium(16/24) `Color/Label/secondary/normal`(#45515a)
+**Check-box/24** (336:14128, 단일 체크박스) — 8월 기록과 구조 동일 확인.
 
-### 2. Button
+**Check-box** (299:7842, "전체동의" 카드형) — 8월 기록과 구조 동일 확인.
 
-**Button-solid** (165:19718) — 36개 variant 중 대표 3개(Large/Primary/Solid, Large/Assistive/Outlined, Small/Primary/Solid) 조회
-- Variant properties: `State` = Normal | Selected | Disabled, `Size` = Large | Medium | Small, `Color` = Primary | Assistive, `Variant` = Solid | Outlined
-- Sizes: Large → h 56px, px `Padding/28` py `Padding/14`, radius `Radius/14`, icon 20px, gap 6px(raw); Small → h 40px, px `Padding/20` py `Padding/8`, radius `Radius/12`, icon 16px, gap `Padding/4`
-- Color: Solid/Primary bg `Color/foreground/brand/normal`(#2a7fec) text `Static/White`; Outlined/Assistive bg white, border `Color/line/brand/brand(blue)`(#2a7fec), text `Color/label/brand/normal`(#2a7fec)
-- Typography: Large Body04/Semibold(16/24), Small Body06/Semibold(14/20)
-- 기타: Interaction 오버레이 레이어(opacity 0, `Semantic/Label/Normal` #171719) — hover/press 시 사용되는 것으로 추정(Figma 코멘트: "Normal에서 가중치 1.5 적용")
+**Check-box/item** (306:15060) — 8월 기록과 구조 동일 확인.
 
-**Button-icon** (165:20132)
-- Variant properties: `color` = Assistive | Primary, `shape` = Box | Round, `size` = Large | Medium | Small, `state` = Normal | Selected | Disabled
-- Sizes: Small 44px(padding `Padding/8` Disabled·Selected / `Padding/10` Normal, icon 20px), Medium 52px(padding `Padding/10`, icon 24px), Large 56px(padding `Padding/12`, icon 32px)
-- Radius: Box = padding 값과 동일(8/10/12px), Round = `Number/999`(pill)
-- Color: Disabled `…-disabled-subtle`(#ebeef0)/`brand-disabled`(#ebeef0); Selected `…-selected`(#ebeef0)/`brand-selected`(#1e52af); Normal `…normal(cool-neutral)`(#f7f8f9)/`brand/normal`(#2a7fec)
-- Nested: Icon/Frame
+## 9. Date-picker — node 239:13371
 
-**Button-text** (183:19951)
-- Variant properties: `size` = XS | S | M | L, `status` = Normal | Disabled, boolean `showLeadingIcon`, boolean `showTrailingIcon`
-- Layout: gap `Padding/4`; 아이콘 크기 L/M=24px, S=20px, XS=16px
-- Typography: L=Body02/Bold(20/28), M=Body03/Bold(18/20), S=Body04/Bold(16/24), XS=Body06/Bold(14/20); Disabled는 동일 크기에서 SemiBold로 대체
-- Color: Normal `Color/label/primary/normal`(#262d32), Disabled `Color/label/primary/disabled`(#9daab3)
-- Nested: Icon/Frame(Leading/Trailing/Loading Icon)
+**Date-picker**("Calendar") — 8월 기록과 구조 동일 확인(w 335 h 318, radius `Radius/20`).
 
-**Button-toggle** (177:9598)
-- Boolean property: `state`(on/off)
-- Layout: padding `Padding/4`(전체), radius `Radius/999`(pill), h 32px(off), gap `Padding/4`
-- Color: on bg `Color/label/primary/selected`(#586873) text `Color/label/inverse/inverse`(white); off bg `Color/foreground/normal(coolNeutral)/normal(cool-neutral)-disabled-normal`(#cdd3d7) text `Color/label/tertiary/normal`(#474747)
-- Typography: Body04/Bold(16/24)
-- Nested: Ellipse(thumb)
+**Date-picker/Selectbox** (300:1493), **Calendar-Item** (300:9351) — 8월 기록과 구조 동일 확인.
 
-### 3. Form / Input
+## 10. Bottom-sheet — node 307:9223
 
-**Textfield** (165:18907) — 26개 variant 중 대표(Normal/Active=False/Focus=False/Disable=False/TrailingButton=False) 조회
-- Variant properties: `Status` = Normal | Positive | Negative, `Active`/`Focus`/`Disable`/`Trailing Button` = boolean
-- Boolean properties: `heading`, `description`, `required`, `leadingContent`, `extra`, `trailingContent`
-- Layout: 전체 gap `Padding/8`; Input 컨테이너 h 56px, padding `Padding/12`, gap `Padding/12`, radius `Radius/16`, bg `Color/foreground/secondary(white)/secondary(white)`(#fafafa), border `Color/line/normal/neutral`; Content 내부 gap `Padding/8`, Text wrapper px `Padding/4` gap `Padding/10`
-- Typography: 라벨 Body06/Medium(14/20) `Color/label/tertiary/normal`; placeholder Body04/Regular(16/24) `Color/label/primary/disabled`; 설명 Caption02/Regular(12/18) `Color/label/quaternary/weak`; 필수(*) 표시 `Color/Status/Status-waring-normal`(#fb2c36)
-- Nested: Icon/Frame(leadingContent), Textinput-Resource-Textfield-Trailing Content
+기본 구조(Header + Action-area 조합)는 8월 기록과 동일 확인. 단, 8월 문서가 근거로 삼았던 구체 preset 인스턴스(`datepicker-error`, node 336:13520)는 이번 조회에서 **더 이상 찾을 수 없었다** — 삭제되었거나 다른 node로 옮겨진 것으로 보인다. 재확인 필요.
 
-**Textarea** (354:18493) — Textfield와 속성/토큰 동일, radius만 `Radius/12`로 다름(Textfield는 `Radius/16`)
+## 11. Badge — node 324:9408
 
-**Textinput/Textarea** (354:17212) — ⚠️ 다른 컴포넌트들과 다른 디자인 시스템(Wanted "Montage") 소속으로 추정됩니다. Pretendard JP 폰트, `--label/neutral`, `--primary/normal(#0066FF)` 등 이 프로젝트의 `Color/Label/*`, `Color/Foreground/*` 네이밍과 다른 별도 토큰 체계를 사용합니다. Figma 문서화 링크: montage.wanted.co.kr
-- Variant properties: `Status` = Normal | Negative, `Resize` = Normal | Limit | Fixed, `Active`/`Focus`/`Disable` = boolean
-- Boolean properties: `heading`, `bottom`, `description`, `leadingContent`, `trailingContent`, `extra1`~`extra4`
-- Layout(raw px 사용, 토큰 아님): radius 12px, padding 12px, gap 12/16/4px
+**Content-Badge** (324:9396, 색상 배지) — 8월 기록과 구조 동일 확인(`color` = Blue/Gray/Green/Red/Orange, `size` = Small/Medium).
 
-**Textinput-Resource-textfield-button** (165:18863)
-- Variant properties: `variant` = Normal | Assistive, boolean `disable`
-- Layout: h 36px, min-w 80px, px `Padding/12` py `Padding/6`, radius `Radius/10`; inner border `Color/line/normal/neutral` + drop shadow
-- Color: Normal bg `Color/foreground/brand/normal`(#2a7fec) text `Color/label/inverse/inverse`(white); Assistive 배경 없음 text `Color/label/primary/normal`; Disabled bg `…-disabled-subtle`(#ebeef0) text `Color/label/tertiary/disabled`(#a3a3a3)
-- Typography: Body05/Medium(15/22)
+**Content-Badge** (375:8105, 카드 종류 배지) — 8월 기록과 구조 동일 확인.
 
-**Textinput-Resource-Textfield-Trailing Content** (165:18896)
-- Variant property: `variant` = Custom | Text | Icon | Timer
-- Text: Body04/Medium(16/24) `Color/label/quaternary/selected`; Timer: Body06/Semibold(14/20) `Color/foreground/brand/normal`; Icon: 중첩 Icon/Frame; Custom: placeholder 블록(`Color/foreground/brand/normal` opacity 8%)
+**Chip/Date-filter** (207:11770) — `Type=Preset`, `State` = Default | Selected. 정확한 상위 프레임(현재 Figma 캔버스 좌표상 Badge/Card 인접 그룹으로 추정) 확인이 매끄럽지 않았다 — 재확인 권장. 구조 자체는 8월 기록과 동일.
 
-**Search-bar-lined** (164:31821)
-- Variant property: `status` = Default | Filled | Selected | Typing
-- Layout: gap `Padding/8`; 컨테이너 px `Padding/12` py `Padding/16` gap `Padding/12` radius `Radius/16`, bg `Color/foreground/secondary(white)/secondary(white)`(#fafafa); border `Color/foreground/brand/normal`(#2a7fec, Selected/Typing) 또는 `Color/line/normal/neutral`(그 외)
-- Typography: Body04/Regular(16/24); 색 placeholder `Color/label/quaternary/disabled`(#919191), 입력값 `Color/label/tertiary/normal`(#474747)
-- Nested: Icon/search/24, Icon/close-circle/solid/20(Typing 상태 지우기 버튼)
+> Banner-status(8월 문서 node 324:10124)는 이번 조회에서 찾을 수 없었다 — 삭제/이동 여부 확인 필요.
 
-**Search-bar-solid** (207:8746)
-- Variant property: `status` = Default | Filled | Selected | Typing
-- Layout: Default는 pill 형태(radius `Radius/999`, px `Padding/12` pr `Padding/14`, h 40px, 폭 고정), Filled/Selected/Typing은 확장형(radius `Radius/16`, px `Padding/16`, h 48px, 폭 100%)
-- Color: bg `Color/foreground/normal(coolNeutral)/normal(cool-neutral)-selected`(#ebeef0) 고정; border `Color/label/secondary/normal`(#45515a, Selected/Typing만)
-- Typography: Body04/Medium(16/24)
+## 12. Card — node 324:9692
 
-**Check-box** (336:14128, 단일 체크박스)
-- Boolean property: `property1`(checked)
-- Layout: 24×24; checked는 radius `Padding/6`(6px) + `shadow/sm`, unchecked는 border 2px + radius `Number/6`(6px)
-- Color: checked bg `Color/primary/normal`(#2a7fec); unchecked bg white border `Color/line/normal/normal`
-- Nested: functional/check 아이콘
+Card 상위 프레임 존재는 확인했으나, 8월 문서가 다뤘던 Card-Item/Receipt의 구체 variant(완료/중복 등 상태 포함형)는 이번 회차에서 개별 재조회하지 않았다 — 재사용 전 Figma에서 최신 상태를 확인할 것.
 
-**Check-box** (299:7842, "전체동의" 카드형 — Check-box(336:14128)와 별개 컴포넌트, 동명)
-- Variant property: `state` = Selected | disabled
-- Layout: w 335px h 60px, px 17/py 19px(raw), radius `Padding/16`, border `Color/line/normal/alternative`, bg `Color/foreground/normal(coolNeutral)/normal(cool-neutral)`(#f7f8f9)
-- Typography: Body03/Semibold(18/20)
-- Nested: Icon/check-circle/20
+## 13. Image-input — node 354:19324
 
-**Check-box-item** (306:15060)
-- Variant property: `state` = Selected | State3; boolean `showBullet`, `showMainText`, `showStatusText`, `showSubText`
-- Layout: pl `Padding/8`, gap 16px(raw)
-- Typography: Body04/Medium(16/24) `Color/label/tertiary/normal`
-- Nested: Icon/check-circle/20, Icon/chevron-right/20
+**Image-input**("Input-receipt-image") — 8월 기록과 구조 동일 확인.
 
-**Checkbox-filter** (377:10616)
-- Variant properties: `state` = Unchecked | Chekced(원본 오타), `type` = Text | Badge
-- Layout: gap `Padding/6`
-- Typography: Body05/Medium(15/22) `Color/label/primary/normal`; 카운트 텍스트 Body05/Semibold `Color/primary/normal`; Badge 타입 bg `Color/primary/subtle`(#dbeefe) px `Padding/8` py `Padding/2` radius `Number/999`, 텍스트 Caption01/Bold(13/19) `Color/primary/normal`
-- Nested: Check-box(336:14128 구조 재사용)
+**Image-viewer-343*140** (1456:23785, 신규) — Image-input 계열의 343×140 이미지 뷰어. 세부 스펙은 미조회 — 필요 시 Figma에서 추가 확인.
 
-**Date-picker** (239:13371, "Calendar")
-- Boolean/구조: 월 이동(Icon/chevron-left·right/24) + 요일 헤더 + 날짜 그리드(Calendar-Item)
-- Layout: w 335px h 318px, px `Padding/20` py `Padding/16` gap `Padding/20`, radius `Radius/20`, border `Color/line/normal/neutral`, bg white
+## 14. Progress (신규) — node 2112:92010
 
-**Date-picker/Selectbox** (300:1493)
-- Variant properties: `property1` = selectbox(고정), `property2` = Default | Selected
-- Layout: w 335px, pill radius `Radius/999`, px `Padding/16` py `Padding/12`; border `Color/line/normal/neutral`(Default) / `Color/line/brand/normal`(Selected)
-- Typography: Body05/Semibold(15/22)
-- Nested: Icon/Calendar/20, Icon/chevron-down or up/20
+**Progress-bar** (427:17502) — `progress` = Step-1 | Step-2 | Step-3. 트랙 w 212px h 6px, radius `Radius/999`(pill), bg `color-atomic-cool-neutral-15`(#EBEEF0 — foreground/disabled-subtle). Indicator bg `color-semantic-fg-brand-normal`(#2A7FEC), 폭이 Step에 따라 71 / 141 / 212px로 증가.
 
-**Calendar-Item** (300:9351)
-- Variant properties: `type` = Date | month, `status` = Selected | Default | Inactive
-- Color/Typography: Date+Selected는 35×35 원형 bg `Color/primary/normal`(#2a7fec) 텍스트 `Color/label/inverse/inverse`(white) Body04/Semibold; Date+Default는 `Color/label/primary/normal`(#262d32); Date+Inactive는 `Color/label/brand/disabled`(#d7dce0); month는 `Color/label/secondary/weak`(#9daab3) Body06/Semibold(14/20)
+## 15. Modal/Tooltip (신규) — node 614:12775
 
-### 4. Content / Feedback
+**Modal** (614:12076) — 그동안 DESIGN.md/`design-system-test.html`에 없다고 명시했던 **Dialog/Modal 컴포넌트**가 여기에 해당한다.
+- Variant: `type` = One-button | Two-button, `variant` = Normal | Strong | Wide, boolean `description`.
+- 공통: w 343px, bg `color-atomic-cool-neutral-5`(#F7F8F9), radius `Radius/20`, drop-shadow(Shadow-Medium 계열), pt `Padding/36`.
+- Title: Body03/Bold(18/26) `color-semantic-label-primary-normal`(#222426), 중앙 정렬. Description(옵션): Body04/Medium(16/24) `color-semantic-label-primary-alternative`(#A2A9AE).
+- 버튼 영역: One-button/Normal은 버튼 1개(브랜드 Solid, h52 radius14). Two-button/Normal·Wide는 Outlined 버튼(흰 배경, border `color-semantic-line-normal-normal`) + Solid 버튼(브랜드) 나열. Two-button/Strong은 브랜드 Solid 버튼 아래 텍스트 버튼(Body04/Semibold, `label-secondary-normal`)을 세로로 배치.
 
-**Content-Badge** (324:9396, 색상 배지)
-- Variant properties: `color` = Blue | Gray | Green | Red | Orange, `size` = Small | Medium
-- Layout: radius `Radius/6`, py `Padding/3`, px `Padding/10`(Medium) / `Padding/8`(Small)
-- Color: Blue bg `Clear Blue/10`(#dbeefe) text `Color/primary/normal`; Gray bg `…-disabled-subtle`(#ebeef0) text `Color/label/secondary/selected`(#8495a0); Orange bg `Color/status/status-progress-subtle`(#fff3e6) text `Color/status/status-progress-normal`(#e87500); Red/Green은 raw hex(#fff0f1/#e0525e, #ecf9f2/#32a06a — 토큰 미바인딩)
-- Typography: Medium=Body06/Bold(14/20), Small=Caption01/Bold(13/19)
+**List-item** (922:17832) — Modal/Tooltip 카테고리 안에 있는 목록 항목형 컴포넌트. 세부 스펙은 미조회 — 필요 시 추가 확인.
 
-**Content-Badge** (375:8105, 카드 종류 배지 — 324:9396과 별개 컴포넌트, 동명)
-- Variant properties: `property1` = Category-badge(고정), `property2` = Personal-card | Coporate-card(원본 오타)
-- Layout: gap `Padding/4`, px `Padding/6` py `Padding/3`, radius `Number/8`
-- Color: bg raw hex(#eef2ff Personal / #eef1f6 Coporate), 텍스트 `Color/label/primary/normal`
-- Typography: Caption01/Bold(13/19)
-- 아이콘은 아이콘 라이브러리가 아닌 개별 인라인 벡터(카드 그래픽)
+## 16. Action-Area — node 183:20022
 
-**Banner-status** (324:10124)
-- Variant properties: `status` = info | warning, `type` = Normal | Solid | Color
-- Layout: w 335px, px `Padding/14` py `Padding/12`, radius `Radius/10`
-- Color: Color 타입은 bg `…-status-subtle` + 상태색 border; Solid는 bg `…-disabled-subtle`(#ebeef0); Normal은 bg white + border `Color/label/primary/normal`
-- Typography: Body06/Semibold(14/20) `Color/label/primary/normal`
-- Nested: Icon/alert-circle/16
+**Action-Area** (183:20022, "Frame 1707483779") — 8월 기록과 구조 동일 확인(Main/Alternative/Sub Action + Home-bar 조합).
 
-**Chip/Date-filter** (207:11770)
-- Variant properties: `type` = Solid(고정), `state` = Default | Selected | Date | 4; boolean `leadingIcon`, `trailingIcon`
-- Layout: px `Padding/14` py `Padding/6`, radius `Radius/999`(pill), gap `Padding/4`(Selected/Default) 또는 `Padding/6`(4)
-- Color: Selected bg `Color/background/bg-inverse`(#474747) text `Color/label/inverse/inverse`(white); Default/4는 bg white border `Color/line/normal/neutral` text `Color/label/primary/disabled`(#9daab3); Date는 border `Color/line/solid/strong`(#919191) text `Color/label/primary/normal`
-- Typography: Body05/Semibold 또는 Medium(15/22)
-- Nested: Icon/Calendar/20, Icon/Frame
+**Action-area** (196:7993, 별개 컴포넌트셋) — 8월 기록과 구조 동일 확인(`type`=One/Two-button, `color`=White/Default, `variant`=Strong/Neutral/Normal/Wide). Main Action bg `color-semantic-fg-brand-normal`(#2A7FEC)은 변하지 않았다.
 
-**Bottom-sheet** (307:9223) — 3개 preset variant 확인, `datepicker-error`(336:13520) 실 구조 조회
-- Variant(preset instance): `Bottom-sheet/datepicker-시작일` | `Bottom-sheet/datepicker-종료일` | `Bottom-sheet/datepicker-error`
-- 구조: Header + Banner-status(warning) + Date-picker/Selectbox × 2 + Calendar + Action-area 조합(375×640)
+## 17. 컴포넌트 명명 규칙 참고
 
-**Image** (373:17619)
-- Variant property: `state` = Disabled | Selected
-- Layout: 121×121, border 1px `Color/line/normal/neutral`(Disabled) 또는 2px `Color/line/brand/normal`(Selected)
-- Nested: Icon/check-circle/solid/20(Selected 상태 우상단 오버레이)
-
-**Image-input** (354:19324, "Input-receipt-image")
-- Layout: 343×240 마스킹된 이미지 + 우하단 원형 카메라 버튼(52px, radius `Number/999`, bg `Color/foreground/normal(coolNeutral)/normal(cool-neutral)`)
-- Nested: Button-icon 패턴(Icon/Frame 카메라 아이콘)
-
-**Camera-capture** (364:10820)
-- 구조: Scan-guide(코너 아이콘 4종 Icon/Scan-Frame/Top-Left·Top-Right·Bottom-Left·Bottom-Right, 320×442) + Camera-controls(bg `Color/background/bg-inverse-strong`(#1f1f1f), gap 84px(raw), py `Padding/20`~`Padding/40`, Img/Gallery/40 + Img/Shutter/70) + Scan-laser(305×38, border-top 2px `Color/primary/normal`, 애니메이션 텍스처 PNG)
-
-**Card-Item/Receipt** (324:9696, `_Group Row Component` 내 2개 실제 variant 확인)
-- 변형 A(336:15138, 상태 메시지 포함형): px `Padding/16` py `Padding/14` gap `Padding/12` radius `Radius/14`, border `Color/line/normal/alternative`, bg `Color/background/bg-secondary`; boolean `statusMessage`(Banner-status 경고 노출 여부)
-- 변형 B(207:12038, 기본형): pt `Padding/14` pb `Padding/18` px `Padding/16`, 나머지 레이아웃 동일
-- 공통: Content-Badge(카드 종류) + 거래처명 Body04/Medium + 금액 Body04/Bold + 날짜 Body06/Medium(`Color/label/secondary/weak`) + 처리상태 Content-Badge(완료=Gray, 작성중=Orange, 중복=Red 등)
-
-### 5. Layout / Action
-
-**Action-Area** (183:20022, "Frame 1707483779/Variant3/White")
-- Boolean properties: `alternative`, `subAction`
-- 구조: Main Action(Button-solid 패턴: bg `Color/foreground/brand/normal` radius `Radius/14` px `Padding/28` py `Padding/14`) + Alternative Action(outlined) + Sub Action(텍스트 버튼, `Color/label/secondary/weak`) + Home-bar(White)
-- Layout gap: 8px(raw)
-
-**Action-area** (196:7993) — Action-Area(183:20022)와 별개 컴포넌트셋, 동일 접두 이름
-- Variant properties: `type` = One-button | Two-button, `color` = White | Default, `variant` = Strong | Neutral | Normal | Wide; boolean `alternative`
-- Layout: 공통 pt `Padding/10` pb `Padding/20` px `Padding/10`; 배경은 그라디언트(투명 → `Color/background/bg-primary` 또는 `bg-secondary`)
-- Main Action 버튼: bg `Color/foreground/brand/normal`(#2a7fec), radius `Radius/14`, px `Padding/28` py `Padding/14`, h 52~56px
-- Alternative Action: outlined 버튼(흰 배경, border `Color/line/normal/neutral`)
-- Wide variant는 Main Action 폭 고정 220px + Alternative 버튼과 gap `Padding/10`으로 나열
-- 하단에 Home-bar(백그라운드 색상에 따라 `bg-secondary` 또는 `bg-alternative`) 옵션 포함
-- Typography: Body04/Semibold(16/24) `Static/White`(Main), `Color/label/brand/normal`(Alternative)
+Figma 원본에 아래와 같은 오타/불일치가 있다 — 그대로 두었다(임의 수정하지 않음): `Coporate-card`(Corporate 오타), `Chekced`(Checked 오타), `skyBlu`(skyBlue 오타, 일부 토큰에만 존재), `Colse-Title-left`(Close 오타, Header 컴포넌트 — 8월 문서 기록, 이번 회차 재확인 안 함).

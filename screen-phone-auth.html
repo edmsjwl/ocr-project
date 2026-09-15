@@ -1,0 +1,471 @@
+<!--
+  휴대폰 인증 화면 — Figma "🟢 진행중" 페이지 "온보딩" 섹션 기준 구현
+  https://www.figma.com/design/ese9l01OJiDfirO8Q6XXIY/-SBS--OCR-프로젝트_디자인
+
+  참조한 Figma 상태(node id):
+    - 휴대폰 인증/Default            1665:44632
+    - 휴대폰 인증/입력 중             1256:31511
+    - 휴대폰 인증/휴대폰 번호/입력 완료 832:18616
+    - 휴대폰 인증/입력 완료           230:12090  (Figma dev 주석: 두 필드가 모두 유효하면 '인증하기' 활성화 → 약관동의 화면으로 이동)
+    - 휴대폰 인증/인증 완료 모달       1170:43530 (Figma dev 주석: '확인' 선택 시 이용약관 동의 화면으로 이동)
+
+  이 파일은 하나의 정적 프레임이 아니라 위 5개 상태를 실제로 넘나드는 인터랙티브 프로토타입이다.
+  '형식 오류' / '인증번호 불일치' / '시간 만료' 상태는 이번에 Figma에서 조회하지 않았다 — 타이머가
+  0:00에 도달했을 때의 표시(빨간 텍스트)만 DESIGN.md의 status-rejected 토큰을 근거로 최소한으로 추정했고,
+  나머지 두 오류 상태는 임의로 만들지 않았다. 정확한 스펙이 필요하면 Figma에서 추가로 확인할 것.
+
+  상태바/아이콘(chevron-left, close-circle, check-circle, signal/wifi/battery)은 Figma 원본 SVG를
+  그대로 쓰지 않고 인라인으로 다시 그렸다 — Figma가 내려주는 에셋 URL은 7일 후 만료되어 저장소에
+  커밋하는 파일에 직접 링크할 수 없기 때문이다. 아이콘 형태는 최대한 원본과 비슷하게 재현했다.
+-->
+<title>휴대폰 인증</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root {
+    /* Color — DESIGN.md §1.1/§1.2 Atomic·Semantic(Light) 기준 */
+    --bg-primary: #f7f8f9;            /* cool-neutral-5 */
+    --bg-alternative: #f1f3f4;        /* cool-neutral-10 */
+    --bg-inverse: #434648;            /* cool-neutral-80 */
+    --white: #ffffff;
+    --brand-normal: #2a7fec;          /* clearBlue-60 */
+    --brand-disabled: #dee3e7;        /* cool-neutral-20 */
+    --label-primary-normal: #222426;  /* cool-neutral-90 */
+    --label-primary-weak: #babec2;    /* cool-neutral-40 */
+    --label-secondary-normal: #434648;/* cool-neutral-80 */
+    --label-secondary-selected: #8c9499; /* cool-neutral-60 */
+    /* line-normal 계열은 단색이 아니라 cool-neutral-70에 불투명도를 얹은 값이다(DESIGN.md §1.2) —
+       normal=24%, neutral=16%, alternative=8%, strong=80%. #575e62 그대로 쓰면 실제보다 진해진다. */
+    --line-normal-normal: rgba(87, 94, 98, 0.24);   /* cool-neutral-70 opacity 24% */
+    --line-normal-neutral: rgba(87, 94, 98, 0.16);  /* cool-neutral-70 opacity 16% */
+    --status-rejected-normal: #f44336;/* red-50 */
+    --dimmer-weak: rgba(0, 0, 0, 0.32); /* common-100 opacity 32% */
+
+    --radius-10: 10px;
+    --radius-14: 14px;
+    --radius-16: 16px;
+    --radius-20: 20px;
+    --shadow-medium: 0 0 10px rgba(134, 134, 134, 0.32);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 40px 16px;
+    background: #e3e6e8;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* ---------------------------------------------------------
+     Frame — 375×812 (Figma iPhone X 프레임)
+     --------------------------------------------------------- */
+  .frame {
+    position: relative;
+    width: 375px;
+    height: 812px;
+    background: var(--bg-primary);
+    overflow: hidden;
+    border-radius: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  }
+
+  /* ---- Status bar (44px) ---- */
+  .status-bar {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    background: var(--bg-primary);
+  }
+  .status-bar .time {
+    font: 600 15px/1 'Pretendard';
+    color: var(--label-primary-normal);
+    letter-spacing: -0.2px;
+  }
+  .status-bar .icons { display: flex; align-items: center; gap: 6px; }
+
+  /* ---- Header (56px) — Header/Back/Primary/Default (754:23399) ---- */
+  .header {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    background: var(--bg-primary);
+  }
+  .header button.back {
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+  }
+
+  /* ---- Container / Page-Title/large ---- */
+  .container {
+    padding-top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .page-title {
+    padding: 16px 20px 16px;
+    font: 600 24px/34px 'Pretendard';
+    letter-spacing: -0.096px;
+    color: var(--label-primary-normal);
+  }
+
+  /* ---- Textfield — Textfield(165:18907) 구조 ---- */
+  .fields { display: flex; flex-direction: column; gap: 20px; padding: 0 20px; }
+
+  .textfield { display: flex; flex-direction: column; gap: 8px; }
+
+  .textfield .heading {
+    padding: 0 4px;
+    font: 700 15px/22px 'Pretendard';
+    letter-spacing: -0.045px;
+    color: var(--label-secondary-normal);
+  }
+
+  .input-shell {
+    height: 56px;
+    border-radius: var(--radius-16);
+    background: var(--white);
+    border: 1px solid var(--line-normal-normal);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    transition: border-color 0.15s ease;
+  }
+  .input-shell.active { border-color: var(--brand-normal); }
+
+  .input-shell input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: none;
+    font: 500 16px/24px 'Pretendard';
+    letter-spacing: -0.048px;
+    color: var(--label-primary-normal);
+    padding: 0 4px;
+  }
+  .input-shell input::placeholder { color: var(--label-primary-weak); }
+  .input-shell input:disabled { color: var(--label-primary-weak); }
+
+  .icon-btn {
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .resend-btn {
+    height: 36px;
+    min-width: 80px;
+    padding: 6px 12px;
+    border-radius: var(--radius-10);
+    background: var(--brand-normal);
+    border: 1px solid var(--line-normal-neutral);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.03);
+    color: var(--white);
+    font: 500 15px/22px 'Pretendard';
+    letter-spacing: -0.045px;
+    cursor: pointer;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .resend-btn:disabled { opacity: 0.5; cursor: default; }
+
+  .timer {
+    font: 600 14px/20px 'Pretendard';
+    letter-spacing: -0.042px;
+    color: var(--brand-normal);
+    padding: 0 4px;
+    white-space: nowrap;
+  }
+  .timer.expired { color: var(--status-rejected-normal); }
+
+  /* ---- 해외 인증 링크 ---- */
+  .alt-link {
+    position: absolute;
+    left: 0;
+    top: 655px;
+    width: 100%;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 15px;
+    line-height: 22px;
+    letter-spacing: -0.045px;
+  }
+  .alt-link .lead { color: var(--label-secondary-selected); font-weight: 500; }
+  .alt-link button {
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    font: 600 15px/22px 'Pretendard';
+    color: var(--label-secondary-normal);
+    text-decoration: underline;
+  }
+
+  /* ---- Action-area (하단 고정) ---- */
+  .action-area {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(180deg, rgba(241,243,244,0) 0%, rgba(241,243,244,0.68) 16%, var(--bg-alternative) 37%);
+  }
+  .action-area .contents { padding: 10px 20px 20px; }
+
+  .primary-btn {
+    width: 100%;
+    height: 52px;
+    border: none;
+    border-radius: var(--radius-14);
+    background: var(--brand-disabled);
+    color: var(--white);
+    font: 600 16px/24px 'Pretendard';
+    letter-spacing: -0.048px;
+    cursor: not-allowed;
+    transition: background 0.15s ease;
+  }
+  .primary-btn.enabled { background: var(--brand-normal); cursor: pointer; }
+
+  .home-bar {
+    display: flex;
+    justify-content: center;
+    padding: 16px 10px 6px;
+    background: var(--bg-alternative);
+  }
+  .home-bar .slider { width: 134px; height: 5px; border-radius: 4px; background: var(--bg-inverse); }
+
+  /* ---- Modal (Modal 614:12076 구조, 인증완료 상태) ---- */
+  .dim {
+    position: absolute;
+    inset: 0;
+    background: var(--dimmer-weak);
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .dim.show { display: flex; }
+
+  .modal {
+    width: 343px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-20);
+    box-shadow: var(--shadow-medium);
+    padding-top: 36px;
+  }
+  .modal .modal-title {
+    padding: 0 32px 20px;
+    text-align: center;
+    font: 700 18px/26px 'Pretendard';
+    letter-spacing: -0.054px;
+    color: var(--label-primary-normal);
+  }
+  .modal .modal-action { padding: 10px 20px 20px; }
+  .modal .primary-btn { cursor: pointer; }
+</style>
+
+<div class="frame">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <span class="icons">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="#222426"/><rect x="5" y="5" width="3" height="7" rx="0.5" fill="#222426"/><rect x="10" y="3" width="3" height="9" rx="0.5" fill="#222426"/><rect x="15" y="0" width="3" height="12" rx="0.5" fill="#222426"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 10.2C8.66 10.2 9.2 9.66 9.2 9C9.2 8.34 8.66 7.8 8 7.8C7.34 7.8 6.8 8.34 6.8 9C6.8 9.66 7.34 10.2 8 10.2Z" fill="#222426"/><path d="M4.6 6.6C5.5 5.7 6.7 5.2 8 5.2C9.3 5.2 10.5 5.7 11.4 6.6" stroke="#222426" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M1.8 3.8C3.5 2.1 5.7 1.2 8 1.2C10.3 1.2 12.5 2.1 14.2 3.8" stroke="#222426" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="2.5" stroke="#222426"/><rect x="2" y="2" width="18" height="8" rx="1.5" fill="#222426"/><rect x="22.5" y="4" width="1.5" height="4" rx="0.7" fill="#222426"/></svg>
+    </span>
+  </div>
+
+  <div class="header">
+    <button class="back" aria-label="뒤로가기" onclick="history.back()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 5L8 12L15 19" stroke="#222426" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <div class="container">
+    <div class="page-title">본인 확인을 위해<br>휴대폰 번호를 인증해 주세요</div>
+
+    <div class="fields">
+      <div class="textfield">
+        <div class="heading">휴대폰 번호</div>
+        <div class="input-shell" id="phoneShell">
+          <input id="phoneInput" type="tel" inputmode="numeric" maxlength="11" placeholder="휴대폰를 입력해 주세요." autocomplete="off">
+          <button class="icon-btn" id="phoneClearBtn" style="display:none" aria-label="지우기" onclick="clearPhone()">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#8C9499"/><path d="M7 7L13 13M13 7L7 13" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
+          <span class="icon-btn" id="phoneCheckIcon" style="display:none">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#2A7FEC"/><path d="M6 10.2L8.5 12.5L14 7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <button class="resend-btn" id="sendBtn" onclick="sendCode()">인증번호 받기</button>
+        </div>
+      </div>
+
+      <div class="textfield">
+        <div class="heading">인증번호</div>
+        <div class="input-shell" id="codeShell">
+          <input id="codeInput" type="tel" inputmode="numeric" maxlength="6" placeholder="인증번호를 입력해 주세요." autocomplete="off" disabled>
+          <span class="timer" id="timerText" style="display:none"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="alt-link">
+    <span class="lead">해외에 계신가요?</span>
+    <button type="button">이메일로 인증하기</button>
+  </div>
+
+  <div class="action-area">
+    <div class="contents">
+      <button class="primary-btn" id="submitBtn" disabled onclick="openSuccessModal()">인증하기</button>
+    </div>
+    <div class="home-bar"><div class="slider"></div></div>
+  </div>
+
+  <div class="dim" id="dim">
+    <div class="modal">
+      <div class="modal-title">인증이 완료되었어요</div>
+      <div class="modal-action">
+        <button class="primary-btn enabled" onclick="closeSuccessModal()">확인</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Figma dev 주석("재전송" 버튼)을 그대로 따르되, 최초 전송 시점에는 실제 앱에서 흔히 쓰는
+  // "인증번호 받기" 라벨로 시작해 전송 이후에만 "재전송"으로 바뀌도록 구현했다 — 이 라벨 전환
+  // 자체는 Figma에서 확인한 상태가 아니라 이번 구현에서 임의로 채운 부분이다.
+  const phoneInput = document.getElementById('phoneInput');
+  const phoneShell = document.getElementById('phoneShell');
+  const phoneClearBtn = document.getElementById('phoneClearBtn');
+  const phoneCheckIcon = document.getElementById('phoneCheckIcon');
+  const sendBtn = document.getElementById('sendBtn');
+  const codeInput = document.getElementById('codeInput');
+  const codeShell = document.getElementById('codeShell');
+  const timerText = document.getElementById('timerText');
+  const submitBtn = document.getElementById('submitBtn');
+  const dim = document.getElementById('dim');
+
+  let verified = false;
+  let timerHandle = null;
+  let remaining = 0;
+
+  function isValidPhone(v) {
+    return /^01[0-9]{8,9}$/.test(v);
+  }
+
+  phoneInput.addEventListener('input', () => {
+    phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 11);
+    const has = phoneInput.value.length > 0;
+    phoneShell.classList.toggle('active', has && !verified);
+    phoneClearBtn.style.display = has && !verified ? 'flex' : 'none';
+    if (verified && phoneInput.value !== phoneInput.dataset.verifiedValue) {
+      resetVerification();
+    }
+    updateSubmitState();
+  });
+
+  function clearPhone() {
+    phoneInput.value = '';
+    resetVerification();
+    phoneShell.classList.remove('active');
+    phoneClearBtn.style.display = 'none';
+    phoneInput.focus();
+    updateSubmitState();
+  }
+
+  function resetVerification() {
+    verified = false;
+    phoneInput.disabled = false;
+    phoneCheckIcon.style.display = 'none';
+    codeInput.disabled = true;
+    codeInput.value = '';
+    timerText.style.display = 'none';
+    clearInterval(timerHandle);
+    updateSubmitState();
+  }
+
+  function sendCode() {
+    if (!isValidPhone(phoneInput.value)) {
+      phoneShell.classList.add('active');
+      phoneInput.focus();
+      return;
+    }
+    verified = true;
+    phoneInput.dataset.verifiedValue = phoneInput.value;
+    phoneInput.disabled = true;
+    phoneShell.classList.remove('active');
+    phoneClearBtn.style.display = 'none';
+    phoneCheckIcon.style.display = 'flex';
+    sendBtn.textContent = '재전송';
+
+    codeInput.disabled = false;
+    codeInput.value = '';
+    codeInput.focus();
+    codeShell.classList.add('active');
+    startTimer();
+    updateSubmitState();
+  }
+
+  function startTimer() {
+    clearInterval(timerHandle);
+    remaining = 180; // 3:00
+    timerText.style.display = 'inline';
+    timerText.classList.remove('expired');
+    renderTimer();
+    timerHandle = setInterval(() => {
+      remaining -= 1;
+      renderTimer();
+      if (remaining <= 0) {
+        clearInterval(timerHandle);
+        timerText.classList.add('expired');
+        updateSubmitState();
+      }
+    }, 1000);
+  }
+
+  function renderTimer() {
+    const m = Math.floor(Math.max(remaining, 0) / 60);
+    const s = Math.max(remaining, 0) % 60;
+    timerText.textContent = `${m}:${String(s).padStart(2, '0')}`;
+  }
+
+  codeInput.addEventListener('input', () => {
+    codeInput.value = codeInput.value.replace(/\D/g, '').slice(0, 6);
+    updateSubmitState();
+  });
+
+  function updateSubmitState() {
+    const codeReady = verified && codeInput.value.length === 6 && remaining > 0;
+    submitBtn.disabled = !codeReady;
+    submitBtn.classList.toggle('enabled', codeReady);
+  }
+
+  function openSuccessModal() {
+    if (submitBtn.disabled) return;
+    clearInterval(timerHandle);
+    dim.classList.add('show');
+  }
+
+  function closeSuccessModal() {
+    // Figma dev 주석: 실제로는 이 시점에 "이용약관 동의" 화면으로 이동한다.
+    // 해당 화면은 이번 작업 범위에 없어 모달을 닫는 동작만 구현했다.
+    dim.classList.remove('show');
+  }
+</script>
