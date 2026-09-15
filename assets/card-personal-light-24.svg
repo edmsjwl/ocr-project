@@ -1,0 +1,21 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon">
+<g id="Frame 140">
+<g id="_Group Row Component">
+
+<g id="Img">
+
+<g id="Property 1=card, Property 2=personal, Property 3=light, Property 4=24">
+<path id="Vector" d="M20.2609 5H3.73913C3.27831 5.00138 2.83675 5.1862 2.5109 5.51409C2.18505 5.84198 2.00138 6.2863 2 6.75V17.25C2.00138 17.7137 2.18505 18.158 2.5109 18.4859C2.83675 18.8138 3.27831 18.9986 3.73913 19H20.2609C20.7221 19 21.1645 18.8156 21.4906 18.4874C21.8168 18.1592 22 17.7141 22 17.25V6.75C22 6.28587 21.8168 5.84075 21.4906 5.51256C21.1645 5.18437 20.7221 5 20.2609 5Z" fill="#60B8FA"/>
+<path id="Vector_2" d="M3.70358 5C3.25218 5.00139 2.81965 5.18662 2.50046 5.51525C2.18126 5.84388 2.00135 6.2892 2 6.75395V17.2776C2.0016 17.6877 2.14235 18.0843 2.39791 18.3988C2.65346 18.7133 3.00775 18.926 3.39949 19L17 5H3.70358Z" fill="#93D2FD"/>
+<path id="Vector_3" d="M22 7V9H2V7C2.00138 6.47005 2.18505 5.96227 2.5109 5.58753C2.83675 5.2128 3.27831 5.00158 3.73913 5H20.2609C20.7221 5 21.1645 5.21071 21.4906 5.58579C21.8168 5.96086 22 6.46957 22 7Z" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_4" d="M22 9V17.3333C22 17.7754 21.8168 18.1993 21.4906 18.5118C21.1645 18.8244 20.7221 19 20.2609 19H3.73913C3.27831 18.9987 2.83675 18.8227 2.5109 18.5104C2.18505 18.1981 2.00138 17.775 2 17.3333V9H22Z" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_5" d="M19 12H17" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_6" d="M12 12H5" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_7" d="M7 15H5" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</g>
+</g>
+</g>
+</g>
+</svg>

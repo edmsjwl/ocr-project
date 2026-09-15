@@ -1,0 +1,392 @@
+<!--
+  메인 홈 화면 — Figma "🟢 진행중" 페이지 "홈" 섹션 기준 구현
+  https://www.figma.com/design/ese9l01OJiDfirO8Q6XXIY/-SBS--OCR-프로젝트_디자인
+
+  참조 Figma node: SCR-02-001/홈/viewport (2006:99084)
+
+  Figma dev 주석(원본 그대로 옮김):
+    - "최근 제출 내역": 조회 시점으로부터 30일 이내에 올린 카드내역 표시
+    - "전체보기" 버튼 클릭 시 영수증 내역 탭으로 이동
+
+  로고·갤러리/파일 아이콘·카드종류 배지·체브론·홈/리스트 네비 아이콘은 Figma MCP
+  `download_assets`로 실제 export한 원본 SVG를 `assets/` 폴더에서 그대로 불러온다
+  (assets/README.md 참고). 상태바 아이콘(셀룰러/Wi-Fi/배터리)과 안읽음 점 표시만
+  canonical node를 특정하지 못해 이전과 동일하게 인라인 SVG로 근사했다.
+-->
+<title>메인 홈</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root {
+    --bg-alternative: #f1f3f4;   /* cool-neutral-10 */
+    --bg-secondary: #ffffff;     /* common-0 */
+    --bg-inverse: #434648;       /* cool-neutral-80 */
+    --label-primary-normal: #222426;   /* cool-neutral-90 */
+    --label-secondary-normal: #434648; /* cool-neutral-80 */
+    --label-secondary-weak: #a2a9ae;   /* cool-neutral-50 */
+    --nav-pill-bg: #ebeef0;      /* cool-neutral-15, foreground/normal/selected */
+    --nav-item-selected-bg: #f7f8f9; /* cool-neutral-5, foreground/normal/normal */
+    --clear-blue-5: #eff8ff;
+    --cool-neutral-10: #f1f3f4;
+
+    --status-pending-subtle: #e1f5fe; --status-pending-normal: #03a9f4;
+    --status-processing-subtle: #e8f5e9; --status-processing-normal: #43a047;
+    --status-completed-subtle: #f1f3f4; --status-completed-normal: #8c9499;
+    --status-rejected-subtle: #ffebee; --status-rejected-normal: #f44336;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 40px 16px;
+    background: #e3e6e8;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+  }
+
+  .frame {
+    position: relative;
+    width: 375px;
+    height: 812px;
+    background: var(--bg-alternative);
+    overflow: hidden;
+    border-radius: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---- Status bar — DESIGN.md §5.2, h44, Background=Alternative ---- */
+  .status-bar {
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    background: var(--bg-alternative);
+  }
+  .status-bar .time { font: 600 15px/1 'Pretendard'; color: var(--label-primary-normal); }
+  .status-bar .icons { display: flex; align-items: center; gap: 6px; }
+
+  /* ---- Header — DESIGN.md §5.4, type=Home, background=Alternative, h56 ---- */
+  .header {
+    height: 56px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    background: var(--bg-alternative);
+  }
+  .logo { display: flex; align-items: center; gap: 2px; }
+  .logo img.wordmark { height: 22px; width: 64px; }
+  .logo img.mark { height: 25px; width: 42px; }
+
+  /* ---- Body ---- */
+  .body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ---- Button-action-card — DESIGN.md에 없던 컴포넌트, 이번에 실측 ---- */
+  .action-cards { display: flex; gap: 12px; }
+  .action-card {
+    flex: 1;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    box-shadow: 0 0 1.5px rgba(134, 134, 134, 0.04);
+    padding: 14px 16px 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-family: 'Pretendard';
+  }
+  .action-card.gallery { height: 110px; }
+  .action-card.file { height: 94px; }
+  .action-card .label {
+    font: 700 15px/22px 'Pretendard';
+    letter-spacing: -0.045px;
+    color: var(--label-primary-normal);
+  }
+  .action-card .icon-wrap { display: flex; justify-content: flex-end; }
+  .action-card .icon-wrap img { width: 48px; height: 48px; display: block; }
+
+  /* ---- 최근 제출 내역 컨테이너 ---- */
+  .recent {
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    box-shadow: 0 0 1.5px rgba(134, 134, 134, 0.04);
+    padding: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .recent-title {
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .recent-title h2 {
+    margin: 0;
+    font: 700 16px/24px 'Pretendard';
+    letter-spacing: -0.048px;
+    color: var(--label-primary-normal);
+  }
+  .see-all {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font: 600 14px/20px 'Pretendard';
+    letter-spacing: -0.042px;
+    color: var(--label-secondary-weak);
+  }
+  .see-all img { display: block; width: 16px; height: 16px; }
+
+  .list { display: flex; flex-direction: column; gap: 28px; }
+
+  /* ---- Card-item-recipt-list — DESIGN.md §12.1 그대로 ---- */
+  .card-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 0 20px;
+    background: var(--bg-secondary);
+    position: relative;
+    cursor: pointer;
+  }
+  .card-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 3px 8px;
+  }
+  .card-badge.personal { background: var(--clear-blue-5); }
+  .card-badge.corporate { background: var(--cool-neutral-10); }
+  .card-badge img { width: 24px; height: 24px; display: block; }
+  .card-badge span {
+    font: 600 12px/18px 'Pretendard';
+    letter-spacing: -0.024px;
+  }
+  .card-badge.personal span { color: var(--label-primary-normal); }
+  .card-badge.corporate span { color: var(--label-secondary-normal); }
+
+  .card-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .card-text .row1 { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .card-text .merchant {
+    font: 500 15px/22px 'Pretendard';
+    letter-spacing: -0.045px;
+    color: var(--label-secondary-normal);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .card-text .amount {
+    font: 700 15px/22px 'Pretendard';
+    letter-spacing: -0.045px;
+    color: var(--label-primary-normal);
+    white-space: nowrap;
+  }
+  .card-text .row2 { display: flex; align-items: center; justify-content: space-between; }
+  .card-text .datetime {
+    display: flex;
+    gap: 6px;
+    font: 500 14px/20px 'Pretendard';
+    letter-spacing: -0.042px;
+    color: var(--label-secondary-weak);
+  }
+  .status-chip {
+    padding: 3px 6px;
+    border-radius: 8px;
+    font: 600 13px/19px 'Pretendard';
+    letter-spacing: -0.026px;
+  }
+  .status-chip.pending { background: var(--status-pending-subtle); color: var(--status-pending-normal); }
+  .status-chip.processing { background: var(--status-processing-subtle); color: var(--status-processing-normal); }
+  .status-chip.completed { background: var(--status-completed-subtle); color: var(--status-completed-normal); }
+  .status-chip.rejected { background: var(--status-rejected-subtle); color: var(--status-rejected-normal); }
+
+  .unread-dot {
+    position: absolute;
+    left: 12px;
+    top: 1px;
+    width: 6px;
+    height: 24px;
+    border-radius: 3px;
+    background: #2a7fec; /* fg-brand-normal — 안읽음 표시, 정확한 node를 못 찾아 근사(assets/README.md 참고) */
+  }
+
+  /* ---- 하단 Nav — 실측: pill 컨테이너 h69 radius999 bg #EBEEF0, 다층 그림자(Shadow-Nav) ---- */
+  .nav-area { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
+  .nav-bar {
+    background: var(--nav-pill-bg);
+    height: 69px;
+    border-radius: 999px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    box-shadow:
+      1px 3px 3px rgba(69, 81, 90, 0.09),
+      3px 7px 5px rgba(69, 81, 90, 0.03),
+      5px 13px 6px rgba(69, 81, 90, 0.01),
+      -1px -1px 10px rgba(69, 81, 90, 0.04);
+  }
+  .nav-item {
+    width: 100px;
+    height: 57px;
+    border-radius: 999px;
+    padding: 2px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Pretendard';
+  }
+  .nav-item.active { background: var(--nav-item-selected-bg); }
+  .nav-item span {
+    font: 700 13px/19px 'Pretendard';
+    letter-spacing: -0.026px;
+  }
+  .nav-item.active span { color: var(--label-primary-normal); }
+  .nav-item:not(.active) span { color: var(--label-secondary-weak); }
+  .nav-item img { width: 24px; height: 24px; display: block; }
+
+  .home-bar {
+    display: flex;
+    justify-content: center;
+    padding: 16px 10px 6px;
+    width: 100%;
+    background: transparent;
+  }
+  .home-bar .slider { width: 134px; height: 5px; border-radius: 4px; background: var(--bg-inverse); }
+</style>
+
+<div class="frame">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <span class="icons">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="#222426"/><rect x="5" y="5" width="3" height="7" rx="0.5" fill="#222426"/><rect x="10" y="3" width="3" height="9" rx="0.5" fill="#222426"/><rect x="15" y="0" width="3" height="12" rx="0.5" fill="#222426"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 10.2C8.66 10.2 9.2 9.66 9.2 9C9.2 8.34 8.66 7.8 8 7.8C7.34 7.8 6.8 8.34 6.8 9C6.8 9.66 7.34 10.2 8 10.2Z" fill="#222426"/><path d="M4.6 6.6C5.5 5.7 6.7 5.2 8 5.2C9.3 5.2 10.5 5.7 11.4 6.6" stroke="#222426" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M1.8 3.8C3.5 2.1 5.7 1.2 8 1.2C10.3 1.2 12.5 2.1 14.2 3.8" stroke="#222426" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="2.5" stroke="#222426"/><rect x="2" y="2" width="18" height="8" rx="1.5" fill="#222426"/><rect x="22.5" y="4" width="1.5" height="4" rx="0.7" fill="#222426"/></svg>
+    </span>
+  </div>
+
+  <div class="header">
+    <div class="logo">
+      <img class="wordmark" src="assets/logo-wise-wordmark.svg" alt="WiSE">
+      <img class="mark" src="assets/logo-scan-mark.svg" alt="스캔">
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="action-cards">
+      <button class="action-card gallery" type="button">
+        <span class="label">앨범에서 선택</span>
+        <div class="icon-wrap">
+          <img src="assets/img-gallery-48-light.svg" alt="">
+        </div>
+      </button>
+      <button class="action-card file" type="button">
+        <span class="label">파일에서 선택</span>
+        <div class="icon-wrap">
+          <img src="assets/img-file-48-light.svg" alt="">
+        </div>
+      </button>
+    </div>
+
+    <div class="recent">
+      <div class="recent-title">
+        <h2>최근 제출 내역</h2>
+        <button class="see-all" type="button" title="영수증 내역 탭으로 이동">
+          전체보기
+          <img src="assets/icon-chevron-right-20.svg" alt="">
+        </button>
+      </div>
+
+      <div class="list" id="cardList">
+        <!-- 행은 JS로 렌더링 (data 배열 참고) -->
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-area">
+    <div class="nav-bar">
+      <button class="nav-item active" type="button">
+        <img src="assets/nav-home-activated-24.svg" alt="">
+        <span>홈</span>
+      </button>
+      <button class="nav-item" type="button">
+        <img src="assets/nav-list-disabled-24.svg" alt="">
+        <span>영수증 내역</span>
+      </button>
+    </div>
+    <div class="home-bar"><div class="slider"></div></div>
+  </div>
+</div>
+
+<script>
+  const CARD_ICON = {
+    personal: '<img src="assets/card-personal-light-24.svg" alt="">',
+    corporate: '<img src="assets/card-coporate-light-24.svg" alt="">'
+  };
+
+  const STATUS_LABEL = { pending: '대기', processing: '처리중', completed: '완료', rejected: '반려' };
+
+  // 실제 Figma "SCR-02-001/홈/viewport" 예시 콘텐츠 기반
+  const rows = [
+    { card: 'personal', merchant: '스타벅스목동SBS점', amount: '128,000', time: '09.18 15:00', status: 'pending', unread: true },
+    { card: 'personal', merchant: '스타벅스목동SBS점', amount: '128,000', time: '09.18 15:00', status: 'processing', unread: true },
+    { card: 'corporate', merchant: '스타벅스목동SBS점', amount: '128,000', time: '09.18 15:00', status: 'completed', unread: false },
+    { card: 'corporate', merchant: '이마트 용산점', amount: '54,200', time: '09.17 11:20', status: 'rejected', unread: false },
+    { card: 'personal', merchant: '교보문고 강남점', amount: '32,000', time: '09.16 18:05', status: 'completed', unread: false },
+    { card: 'corporate', merchant: '스타벅스목동SBS점', amount: '128,000', time: '09.15 09:40', status: 'rejected', unread: false },
+  ];
+
+  const list = document.getElementById('cardList');
+  rows.forEach(r => {
+    const row = document.createElement('div');
+    row.className = 'card-row';
+    row.innerHTML = `
+      ${r.unread ? '<div class="unread-dot"></div>' : ''}
+      <div class="card-badge ${r.card}">
+        ${CARD_ICON[r.card]}
+        <span>${r.card === 'personal' ? '개인' : '법인'}</span>
+      </div>
+      <div class="card-text">
+        <div class="row1">
+          <span class="merchant">${r.merchant}</span>
+          <span class="amount">${r.amount}원</span>
+        </div>
+        <div class="row2">
+          <span class="datetime"><span>${r.time.split(' ')[0]}</span><span>${r.time.split(' ')[1]}</span></span>
+          <span class="status-chip ${r.status}">${STATUS_LABEL[r.status]}</span>
+        </div>
+      </div>
+    `;
+    row.addEventListener('click', () => {
+      const dot = row.querySelector('.unread-dot');
+      if (dot) dot.remove();
+    });
+    list.appendChild(row);
+  });
+</script>

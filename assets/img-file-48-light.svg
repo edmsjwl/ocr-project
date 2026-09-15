@@ -1,0 +1,19 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon">
+<g id="Frame 140">
+<g id="_Group Row Component">
+
+<g id="Img">
+
+<g id="Property 1=File, Property 2=48, Property 3=light">
+<path id="Rectangle 114" d="M10 12C10 10.8954 10.8954 10 12 10H23.2602C23.7376 10 24.1992 10.1708 24.5617 10.4815L27.5 13H31H36C37.1046 13 38 13.8954 38 15V24C38 25.1046 37.1046 26 36 26H12C10.8954 26 10 25.1046 10 24V12Z" fill="#EFF8FF"/>
+<path id="Rectangle 114_2" d="M38 15C38 13.8292 37.0508 12.88 35.88 12.88H30.7406H27.3703L24.561 10.4795C24.1989 10.17 23.7381 10 23.2618 10H13C11.3431 10 10 11.3431 10 13" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Rectangle 113" d="M11 16.5H23.2988C23.6393 16.5001 23.9695 16.6164 24.2354 16.8291L27.4375 19.3906L27.5742 19.5H37C37.8284 19.5 38.5 20.1716 38.5 21V30C38.5 30.8284 37.8284 31.5 37 31.5H11C10.1716 31.5 9.5 30.8284 9.5 30V18C9.5 17.1716 10.1716 16.5 11 16.5Z" fill="white" stroke="black" stroke-linejoin="round"/>
+<rect id="Rectangle 112" x="6.5" y="25.5" width="35" height="13" rx="2.5" fill="#3B99F6" stroke="black"/>
+<path id="Vector 8048" d="M19 30H29" stroke="black" stroke-linecap="round"/>
+</g>
+</g>
+</g>
+</g>
+</g>
+</svg>

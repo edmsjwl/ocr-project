@@ -14,17 +14,17 @@
 2. Typography
 3. Elevation
 4. Icon
-5. Layout (Grid, Status-bar, Home-bar, Header, Tab-item, Tab-menu, Page-Title/large)
+5. Layout (Grid, Status-bar, Home-bar, Header, Tab-item, Tab-menu, Page-Title/large, Navigation-item/Navigation-menu/Navigation-bottom)
 6. Button (Button-solid, Button-icon, Button-text)
-7. Textfield (Textfield, Textinput-Resource-*, Program-select, Dropdown-item)
-8. Check-box (Check-box/24, Check-box, Check-box/item)
-9. Date-picker (Date-picker/Selectbox, Calendar-Item, Calendar 컨테이너)
+7. Textfield (Textfield, Textinput-resource-*, Dropdown-box, Dropdown-item-selectbox)
+8. Check-box (Check-box, Check-box/item, Thumnail, Uploader-file)
+9. Date-picker (Date-picker-selectbox, Date-picker/calendar-item, Date-picker/Calendar, Month-navigator, Month-picker/item, Date-picker-rangebox)
 10. Bottom-sheet
 11. Badge (Content-Badge ×2, Chip/Date-filter)
 12. Card (Card-Item/Receipt, Card-item/Error, Card-Warning)
 13. Image-input (Thumbnail, Image-viewer)
 14. Progress (Progress-bar)
-15. Modal (Modal, List-item)
+15. Modal (Modal, Modal-list-item)
 16. Action-Area (Action-area)
 
 ---
@@ -149,20 +149,22 @@ UI 아이콘 사이즈 단계: 16 / 20 / 24 / 28px. Graphic(삽화형) 아이콘
 - State: 없음(정적)
 
 ### 5.4 Header — 참고: node 166:3969
-- Variants: `type` = Back | Home | Menu-Search | Close-Title-center | Back home | Close | Title, `background` = Primary | Secondary | Alternative, `icon`(boolean), `iconCount` = Default | 1 | 2, `iconShow`(boolean), `showStepIndicator`(boolean), `title`(boolean)
+
+⚠️ 2026-09-16: 사용자가 Figma에서 Header를 정리했다는 안내에 따라 재조회했다. **`Menu-Search`, `Title` 타입이 삭제됐다** — 이전에 있던 20px/Bold 제목 스타일(Body02/Bold)은 더 이상 쓰이지 않는다. `icon` property도 이제 `"True"` 고정값만 남아(icon=False 조합 없음) 사실상 boolean이 아니라 상수다.
+
+- Variants: `type` = Back | Home | Close-Title-center | Back home | Close (5개, 이전 7개에서 축소), `background` = Primary | Secondary | Alternative, `icon` = "True"(고정), `iconCount` = 1 | 2, `iconShow`(boolean), `showStepIndicator`(boolean), `title`(boolean) — 총 12개 조합 확인(이전 36개에서 축소)
 - Size: W 375, H 56 (고정)
 - Auto Layout: horizontal
 - Padding: X `Padding/20`(20px) / Y `Padding/16`(16px)
-- Gap: 타입에 따라 다름 — Back류는 `gap 4px`(아이콘-타이틀 그룹), Close류는 `gap 8px`
+- Gap: 타입에 따라 다름 — Back류는 `gap 4px`(아이콘-타이틀 그룹), Close/Close-Title-center류는 `gap 8px`
 - Radius: 없음
 - Border: 없음
-- Background: `background=Alternative`(대부분 조합 기본값) → `bg-alternative`(`#F1F3F4`) / `Primary` → `bg-primary`(`#F7F8F9`) / `Secondary` → `bg-secondary`(`#FFFFFF`) — 단, 정확히 어떤 `type`+`background` 조합이 어떤 색을 쓰는지는 위 5가지 semantic 값 중 하나로 결정되며 세부 매트릭스가 매우 많다(36개 조합) — 필요한 특정 조합은 Figma에서 재확인 권장.
-- Typography(제목, Back/Close/BackHome류): `Body03/Semibold` — 18px/26px/-0.3%(실제 -0.054px), color `label-primary-normal`(`#222426`), 가로 중앙 절대배치(w280, left 50%)
-- Typography(제목, Menu-Search/Title류): `Body02/Bold` — 20px/28px/-0.4%(실제 -0.08px), color `label-primary-normal`(`#222426`)
-- Step-indicator(옵션, `showStepIndicator`): 현재 단계 숫자 `Body04/Semibold`(16/24, -0.3%) color `label-brand-normal`(`#2A7FEC`), "/" 및 총 단계 숫자 `Body06/Semibold`(14/20, -0.3%) color `label-secondary-normal`(`#434648`), 내부 gap 2px
+- Background: `background=Alternative`(Home/Back-home 기본값) → `bg-alternative`(`#F1F3F4`) / `Primary` → 조합에 따라 `bg-primary`(`#F7F8F9`) 또는 `bg-secondary`(`#FFFFFF`)로 반전되는 경우가 있음(Back 타입은 Primary↔Secondary가 서로 바뀐 매핑) — 정확한 특정 조합은 Figma에서 재확인 권장.
+- Typography(제목, 전 타입 공통): `Body03/Semibold` — 18px/26px/-0.3%(실제 -0.054px), color `label-primary-normal`(`#222426`), 가로 중앙 절대배치(w280, left 50%)
+- Step-indicator(옵션, `showStepIndicator`, Back 타입에서만 확인): 현재 단계 숫자 `Body04/Semibold`(16/24, -0.3%) color `label-brand-normal`(`#2A7FEC`), "/" 및 총 단계 숫자 `Body06/Semibold`(14/20, -0.3%) color `label-secondary-normal`(`#434648`), 내부 gap 2px
 - Icon: chevron-left/24, close/24, home/24 — 24px, `[Figma에서 확인 불가]`(내부 색상)
-- Home 타입 로고: `LogoWise`(64×22) + `Logo`(42×25) 가로 배치, gap `Padding/2`(2px) — SVG 에셋
-- Figma dev 주석(실사용처, 참고용): `Title/Alternative`→"[영수증 내역]에서 사용", `Back/Alternative`→"[온보딩]에서 사용", `Close/Alternative`→"[영수증 등록]에서 사용", `Back home/Alternative`→"[상세 내역]에서 사용", `Home/Alternative`→"[메인홈]에서 사용"
+- Home 타입 로고: `LogoWise`(64×22) + `Logo`(42×25) 가로 배치, gap `Padding/2`(2px) — SVG 에셋. 실제 파일은 `assets/logo-wise-wordmark.svg` / `assets/logo-scan-mark.svg`로 export해 보관 중(assets/README.md 참고)
+- Figma dev 주석(실사용처, 참고용): `Back/Alternative`→"[온보딩]에서 사용", `Close/Alternative`→"[영수증 등록]에서 사용", `Back home/Alternative`→"[상세 내역]에서 사용", `Home/Alternative`→"[메인홈]에서 사용" — ⚠️ 이전에 있던 `Title/Alternative`→"[영수증 내역]에서 사용" 주석은 Title 타입 자체가 삭제되며 함께 없어졌다. "영수증 내역" 화면이 이제 어떤 Header를 쓰는지는 `[Figma에서 확인 불가]`.
 - State: 이 컴포넌트 자체에 Hover/Pressed/Focus/Disabled 정의된 variant 없음. `[Figma에서 확인 불가]`
 
 ### 5.5 Tab-item — 참고: node 207:11372
@@ -196,6 +198,16 @@ UI 아이콘 사이즈 단계: 16 / 20 / 24 / 28px. Graphic(삽화형) 아이콘
 - Typography(설명, `description=true`일 때): `Body04/Medium` — 16px/24px/-0.3%(실제 -0.048px), color `label-secondary-normal`(`#434648`)
 - Figma dev 주석: "인증화면에 사용됩니다."
 - State: 없음(정적, description on/off만 boolean)
+
+### 5.8 Navigation-item / Navigation-menu / Navigation-bottom — 참고: node 432:17481 / 432:17480 / 614:11468
+
+메인 홈 화면(screen-home.html)에서 이미 실측해 사용 중이던 하단 pill 내비게이션이 디자인시스템 Layout 페이지 안에 정식으로 포함되어 있는 것을 확인했다 — 8월 기록에 있던 구식 `Navigation-bar`(166:4941)와는 다른, 현재 사용되는 컴포넌트다.
+
+⚠️ 2026-09-16: 이름이 바뀌었다 — `Navigation-menu-item(2)`→`Navigation-item`, `navigation-bar`(소문자)→`Navigation-menu`, `Nav-area`→`Navigation-bottom`. 값 자체는 변경 없음.
+
+- **Navigation-item**(구 "Navigation-menu-item(2)") — Variants: `Property 2` = Home-Selected | Home-Default | Receipt-Default | Receipt-Selected. Size: W 100 H 57, radius `Number/64`(pill), padding X `Padding/20` Y `Padding/2`. Selected(정확히는 "선택 안 된 receipt 탭" 조합만 배경 확인): bg `foreground/normal/selected`(`#EBEEF0`) / 그 외: bg `foreground/normal/normal`(`#F7F8F9`). 라벨 `Caption01/Bold` 13/19/-0.2%(실제 -0.026px) — 선택됨 color `label-primary-normal`(`#222426`), 선택안됨 color `label-secondary-weak`(`#A2A9AE`). 아이콘 24px(홈/리스트 타입, light/dark 모드 존재).
+- **Navigation-menu**(구 "navigation-bar") — pill 컨테이너. bg `foreground/normal/selected`(`#EBEEF0`), H 69, radius `Number/64`, padding `Padding/6`(6px), Navigation-item 2개를 가로 배치. Shadow: 5개 레이어로 구성된 별도 그림자(§3 Elevation 표에 없는 값) — `1px 3px 3px rgba(69,81,90,0.09)`, `3px 7px 5px rgba(69,81,90,0.03)`, `5px 13px 6px rgba(69,81,90,0.01)`, `-1px -1px 10px rgba(69,81,90,0.04)`, 그리고 offset(8,20) opacity 0인 레이어 1개.
+- **Navigation-bottom**(구 "Nav-area") — Variants: `type` = Home | Receipt. Navigation-menu + Home-bar(§5.3) 세로 조합.
 
 ---
 
@@ -292,7 +304,7 @@ UI 아이콘 사이즈 단계: 16 / 20 / 24 / 28px. Graphic(삽화형) 아이콘
 - Trailing button("재전송" 등): §7.2 Textinput-Resource-textfield-button 참조
 - State 요약: **Normal / Focus / Disabled / Negative(Error)** — Hover/Pressed 별도 variant `[Figma에서 확인 불가]`
 
-### 7.2 Textinput-Resource-textfield-button — 참고: node 165:18863
+### 7.2 Textinput-resource-textfield-button(케이싱 정리, 구 "Textinput-Resource-textfield-button") — 참고: node 165:18863
 - Size: H 36, min-w 80
 - Padding: X `Padding/12`(12px) / Y `Padding/6`(6px)
 - Radius: `Radius/10`(10px)
@@ -302,19 +314,25 @@ UI 아이콘 사이즈 단계: 16 / 20 / 24 / 28px. Graphic(삽화형) 아이콘
 - Typography: `Body05/Medium` — 15px/22px/-0.3%(실제-0.045px), color `label-inverse/inverse`(`#FFFFFF`)
 - Interaction 오버레이 존재(opacity-0), 정확한 hover/press opacity `[Figma에서 확인 불가]`
 
-### 7.3 Program-select — 참고: node 635:15003
-- Variants: `state` = Close | open | Dropdown-list
+### 7.3 Dropdown-box(구 "Program-select") — 참고: node 635:15003
+
+⚠️ 2026-09-16: 이름과 variant property 명이 바뀌었다(`Program-select`→`Dropdown-box`, property `state`→`status`) — 값 자체는 변경 없음, 재확인 완료.
+
+- Variants: `status` = Close | open | Dropdown-list
 - Size: W 343(고정)
 - Auto Layout: vertical
 - Heading: `Body05/Bold` 15/22/-0.3%(실제-0.045px), color `label-secondary-normal`(`#434648`) + Required `*`(Pretendard JP Medium 14px, color `status/rejected/normal` `#F44336`)
-- Input Container: H 56, radius `Radius/16`(16px), padding `Padding/12`(12px)
-  - `state=Close`: border `line/normal/normal` → `rgba(87,94,98,0.24)`, trailing `Icon/chevron-down/20`
-  - `state=open`: border `line/brand/normal`(`#2A7FEC`, 불투명), trailing `Icon/chevron-up/20`
+- Input Container(`Dropdown-item-input`, 구 "Input"): H 56, radius `Radius/16`(16px), padding `Padding/12`(12px)
+  - `status=Close`: border `line/normal/normal` → `rgba(87,94,98,0.24)`, trailing `Icon/chevron-down/20`
+  - `status=open`: border `line/brand/normal`(`#2A7FEC`, 불투명), trailing `Icon/chevron-up/20`
 - Placeholder: `Body04/Medium` 16/24/-0.3%(실제-0.048px), color `label-primary-weak`(`#BABEC2`)
 - Dropdown-list(옵션 목록 패널): border 1px `color/foreground/brand/normal`(`#2A7FEC`), radius `Radius/16`(16px), H 256(고정), 스크롤바(6px, radius `Radius/999`, color `foreground/normal/disabled-normal` `#CDD3D7`)
 - State: Close / open(Focus) / Dropdown-list(목록 펼침) 3종
 
-### 7.4 Dropdown-item — 참고: node 1084:30439
+### 7.4 Dropdown-item-selectbox(구 "Dropdown-item") — 참고: node 1084:30439
+
+⚠️ 2026-09-16: 이름이 바뀌었다(`Dropdown-item`→`Dropdown-item-selectbox`) — 값 자체는 변경 없음, 재확인 완료.
+
 - Variants: `status` = Dropdown-item-default | Dropdown-item-pressed | Dropdown-item-selected
 - Size: W 334, H 56
 - Padding: `Padding/12`(12px)
@@ -328,18 +346,9 @@ UI 아이콘 사이즈 단계: 16 / 20 / 24 / 28px. Graphic(삽화형) 아이콘
 
 ## 8. Check-box — 참고: node 364:10667
 
-### 8.1 Check-box/24(단일 체크박스) — 참고: node 336:14128
-- Boolean property: `property1`(checked 여부)
-- Size: 24×24
-- Radius: Checked `Padding/6`(6px) / Unchecked `Number/6`(6px) — 동일 6px, 토큰 이름만 다름
-- Border(Unchecked): 2px, color `line/normal/normal` → `rgba(87,94,98,0.24)`
-- Background(Checked): `color/foreground/brand/normal`(`#2A7FEC`)
-- Background(Unchecked): `static/white`(`#FFFFFF`)
-- Shadow: `Shadow-Low`(§3) 적용 — `drop-shadow(rgba(134,134,134,0.04) 0 0 3px, spread 10)`, Unchecked/Checked 공통
-- Icon(Checked): `functional/check` 20×20, 이미지 에셋(내부 색 `[Figma에서 확인 불가]`)
-- State: Checked / Unchecked 2종. Hover/Pressed/Focus/Disabled `[Figma에서 확인 불가]`
+⚠️ 2026-09-16: 사용자가 Figma에서 Check-box 그룹을 정리했다는 안내에 따라 재조회했다. **`Check-box/24`(단일 체크박스, 구 node 336:14128)가 이 그룹에서 빠졌다** — Figma에서 다른 곳(보류 등)으로 옮겨진 것으로 보인다. 이 문서는 사용자 요청에 따라 보류 컴포넌트를 별도로 추적하지 않으므로, 아래 목록에서도 뺐다 — 단일 체크박스가 필요하면 §8.1 Check-box("전체동의" 카드형) 내부의 체크 아이콘 패턴을 참고하거나 Figma에서 재확인할 것. 대신 이 그룹에 **Thumnail(파일 선택 프리뷰), Uploader-file(파일 업로더)** 2개가 새로 추가되어 있었다.
 
-### 8.2 Check-box("전체동의" 카드형) — 참고: node 299:7842
+### 8.1 Check-box("전체동의" 카드형) — 참고: node 299:7842
 - Variants: `state` = Selected | disabled
 - Size: W 335, H 60
 - Padding: px 17 / py 19(raw, Padding 토큰 아님)
@@ -349,7 +358,7 @@ UI 아이콘 사이즈 단계: 16 / 20 / 24 / 28px. Graphic(삽화형) 아이콘
 - Typography: `Body03/Semibold` 18/26/-0.3%(실제-0.054px), color `label-primary-normal`(`#222426`)
 - Icon: Selected는 `check-circle`(24px, Selected 상태 이미지), disabled는 별도 `check-circle`(Dark 모드 이미지 — mode="Dark"로 명명되어 있으나 실제로는 비활성 표현용으로 추정, 정확한 근거 `[Figma에서 확인 불가]`)
 
-### 8.3 Check-box/item — 참고: node 306:15060
+### 8.2 Check-box/item — 참고: node 306:15060
 - Variants: `state` = Selected | Disabled, boolean `showBullet`, `showMainText`, `showStatusText`, `showSubText`
 - Size: W 335, H는 content-fit
 - Padding: pl `Padding/8`(8px) pr `Padding/2`(2px) py `Padding/8`(8px)
@@ -358,13 +367,37 @@ UI 아이콘 사이즈 단계: 16 / 20 / 24 / 28px. Graphic(삽화형) 아이콘
 - Icon: `check-circle`(24px) + trailing `chevron-right/20`
 - State: Selected / Disabled — 텍스트 색상 변화 없음, 아이콘 이미지만 교체
 
+### 8.3 Thumnail(파일 선택 프리뷰, "Thumbnail" 오타 그대로 기록) — 참고: node 1379:38004
+
+⚠️ §13.1의 "Thumbnail"(Image-input 카테고리, node 431:15767)과는 다른 별개 컴포넌트다 — 이름이 같아 보이지만 용도가 다르니 혼동하지 말 것.
+
+- Variants: `state` = Default | Selected
+- Size: 76×76(정사각형)
+- Radius: `Radius/12`(12px)
+- Border: Default 1px color `line/normal/normal` → `rgba(87,94,98,0.24)` / Selected 2px color `line/brand/normal`(`#2A7FEC`, 불투명)
+- 내부: 업로드된 이미지를 radius12로 잘라 꽉 채움(object-cover)
+- State: Default(미선택) / Selected(선택됨) 2종
+
+### 8.4 Uploader-file — 참고: node 1518:60716
+- Boolean property: `focus`
+- Size: W 335, H는 content-fit
+- Auto Layout: vertical, gap `Padding/10`(10px)
+- Padding: `Padding/12`(12px) 전체
+- Radius: `Radius/14`(14px)
+- Border: `focus=false` 1px color `line/normal/neutral` → `rgba(87,94,98,0.16)` / `focus=true` 2px color `label-brand-normal`(`#2A7FEC`, 불투명)
+- Background: `static/white`(`#FFFFFF`)
+- 내부 Row: gap `Padding/6`(6px) — 아이콘(`file-upload`, 20px) + 파일명(`Body04/Medium` 16/24/-0.3%, color `label-primary-normal`, 밑줄 처리된 파일명 + 확장자 조합) + 파일크기(`Caption01/Medium` 13/19/-0.2%, color `label-secondary-selected` `#8C9499`)
+- State: focus=false(기본) / focus=true(포커스) — 아이콘과 텍스트 내용은 동일, 테두리만 변화
+
 > Checkbox/filter는 이번 회차에 재조회하지 않았다 — `[Figma에서 확인 불가: 이번 문서 범위 밖]`.
 
 ---
 
 ## 9. Date-picker — 참고: node 239:13371
 
-### 9.1 Date-picker/Selectbox — 참고: node 300:1493
+⚠️ 2026-09-16: 사용자가 Figma에서 Date-picker 그룹을 정리했다는 안내에 따라 재조회했다. 구성이 상당히 바뀌었다 — 컴포넌트 다수가 이름을 바꿔 "Date-picker/..." 네이밍 규칙으로 재편됐고, 이전에 `[Figma에서 확인 불가]`로 비워뒀던 달력 컨테이너·월 이동 버튼을 이번에 전부 채웠다. **새 컴포넌트 `Date-picker-rangebox`(기간 표시 필드)도 추가됐다.**
+
+### 9.1 Date-picker-selectbox(구 "Date-picker/Selectbox") — 참고: node 300:1493
 - Variants: `status` = Default | Selected
 - Size: W 168(개별 셀렉트박스 기준, 화면에는 2개 나란히 배치되어 합쳐서 폭이 커짐)
 - Auto Layout: vertical, gap `Padding/8`(8px)
@@ -376,7 +409,7 @@ UI 아이콘 사이즈 단계: 16 / 20 / 24 / 28px. Graphic(삽화형) 아이콘
 - Icon: `Icon/Calendar/20`(20px, 좌측)
 - State: Default / Selected 2종
 
-### 9.2 Calendar-Item — 참고: node 300:9351
+### 9.2 Date-picker/calendar-item(구 "Calendar-Item") — 참고: node 300:9351
 - Variants: `type` = Date | month, `status` = Selected | Inactive | Default | Current
 - Size(type=Date): 36×36(Selected/Current), content-fit(Default/Inactive, 대략 37×35)
 - Radius(Selected/Current 원형): 29px
@@ -386,8 +419,49 @@ UI 아이콘 사이즈 단계: 16 / 20 / 24 / 28px. Graphic(삽화형) 아이콘
 - Typography(type=month, "월" 라벨): `Body06/Semibold` 14/20/-0.3%(실제-0.042px), color `label-secondary-weak`(`#A2A9AE`)
 - State: Date일 때 Selected/Current/Default/Inactive 4종
 
-### 9.3 Calendar(달력 컨테이너) — 참고: node 239:13371
-- `[Figma에서 확인 불가: 이번 회차에 컨테이너 자체(월 이동 헤더, 요일 라벨 행, 전체 padding/gap/radius)를 재조회하지 못했다.]` 필요 시 Figma에서 별도 조회 필요.
+### 9.3 Date-picker/Calendar(달력 컨테이너) — 참고: node 2449:90679
+
+이전 회차에 `[Figma에서 확인 불가]`였던 컨테이너를 이번에 채웠다.
+
+- Variants: `status` = Calendar-default | Calendar-selected
+- Size: W 343, H 318(고정)
+- Auto Layout: vertical, gap `Padding/20`(20px)
+- Padding: `Padding/16`(16px) 전체
+- Radius: `Radius/20`(20px)
+- Border: 1px, color `line/normal/neutral` → `rgba(87,94,98,0.16)`
+- Background: `bg-secondary`(`#FFFFFF`)
+- 헤더 행: `Icon/chevron-left/24` + 월 라벨("2026년 8월", `Body04/Semibold` 16/24/-0.3%, color `label-primary-normal`) + `Icon/chevron-down-solid/16` + `Icon/chevron-right/24`, W147 가운데 그룹, `Padding/8`(8px) gap
+- 요일 헤더 행: §9.2의 `type=month` variant 7개("일~토") 가로 배치, gap `Padding/8`(8px), 각 셀 W37
+- 날짜 그리드: §9.2의 `type=Date` variant를 gap `Padding/8`(8px)로 행·열 배치, 각 셀 W37 H35(선택/오늘 원형만 36×36·35×35)
+- State: Calendar-default(오늘 없이 기본 표시) / Calendar-selected(특정 날짜 선택됨) 2종 — 개별 날짜 셀 상태는 §9.2 참조
+
+### 9.4 Month-navigator(구 "Calendar/month-chevron-button") — 참고: node 2449:87700
+
+⚠️ 이전 이름 "Calendar/month-chevron-button"과 property 이름(`Property 1=monthNavigation-button-right/left-default/disabled`)이 전부 바뀌었다.
+
+- Variants: `type` = navigator | label, `status` = activated | disabled | "-"(label일 때), `chevron` = next | previous | "-"(label일 때)
+- Size(navigator): 20×20 / Size(label): content-fit
+- Icon(navigator): chevron 방향 아이콘, 20px, `[Figma에서 확인 불가]`(내부 색상 — Activated/Disabled 상태별로 다른 이미지 에셋 사용)
+- Typography(label, 월 텍스트 "9월"): `Heading03/Bold` 24px/34px/-0.4%(실제-0.096px), color `label-primary-normal`(`#222426`) — ⚠️ §9.3 헤더의 월 라벨(`Body04/Semibold` 16px)과는 다른, 더 큰 별도 스타일이다. 실사용처(§9.3 헤더 vs 다른 화면) 재확인 권장.
+- State: navigator일 때 activated/disabled × next/previous 4종 + label 1종
+
+### 9.5 Month-picker/item(구 "Month-picker-dropdown-item") — 참고: node 1165:19265
+- Variants: `property1` = Dropdown-month-item-default | Dropdown-month-item-selected | Dropdown-month-item-pressed
+- Size: W 160 H 180(그룹), 개별 아이템 W120 H40
+- 세부 padding/color `[Figma에서 확인 불가: 이번 회차 미측정]` — 이름만 재확인, 내부 스펙은 8월 기록에 없었고 이번에도 개별 조회하지 못했다.
+
+### 9.6 Date-picker-rangebox(신규) — 참고: node 2097:67358
+
+DESIGN.md에 그동안 없던 컴포넌트 — 기간(시작일~종료일)을 한 필드에 표시하는 인풋이다.
+
+- Size: W 335, H 44(고정)
+- Auto Layout: horizontal, gap `Padding/12`(12px)
+- Padding: X `Padding/16`(16px) / Y `Padding/12`(12px)
+- Radius: `Radius/14`(14px)
+- Border: 1px, color `label-secondary-normal`(`#434648`, 불투명 — `line/*` 토큰이 아니라 label 토큰을 그대로 테두리에 쓴 특이 케이스)
+- Background: `static/white`(`#FFFFFF`)
+- 내부: `Icon/Calendar/24`(24px) + 날짜 범위 텍스트("26.08.11 ~ 26.09.10", `Body04/Medium` 16/24/-0.3%, color `label-primary-normal`, gap `Padding/4`(4px)) + trailing `Icon/close-circle/solid/20`(지우기 버튼)
+- State: 단일 상태만 확인(variant 없음) — Focus/Disabled 등 `[Figma에서 확인 불가]`
 
 ---
 
@@ -423,12 +497,15 @@ UI 아이콘 사이즈 단계: 16 / 20 / 24 / 28px. Graphic(삽화형) 아이콘
   - Green: bg `status/processing/subtle`(`#E8F5E9`), text `status/processing/normal`(`#43A047`)
 
 ### 11.2 Content-Badge(카드 종류 배지) — 참고: node 375:8105
-- Variants: `type` = Personal-card | Coporate-card(원본 오타, 그대로 기록) 또는 소문자 `personal`/`coporate`(스타일별로 이름 표기 다름), `style` = Round | Square, `mode` = Light | Dark
+
+⚠️ 2026-09-16: 사용자가 Figma에서 오타를 고쳤다 — `Coporate`(Corporate 오타)가 문서 전체에서 `Corporate`/`corporate`로 정정됐다. §17의 관련 오타 기록도 함께 지웠다.
+
+- Variants: `type` = Personal-card | Corporate-card 또는 소문자 `personal`/`corporate`(스타일별로 이름 표기 다름), `style` = Round | Square, `mode` = Light | Dark
 - Round style: Padding `gap 4 / px 8 / py 3`, radius `999`(pill)
   - Personal: bg `clear-blue/5`(`#EFF8FF`, Light) / `rgba(30,82,175,0.16)`(Dark)
-  - Coporate: bg `cool-neutral/10`(`#F1F3F4`, Light) / `rgba(241,243,244,0.04)`(Dark)
-  - 텍스트: `Caption01/Semibold` 13/19/-0.2%(실제-0.026px), Personal-Light → `label/primary/normal`(`#222426`) / Personal-Dark → `label/primary/normal`(`#F7F8F9`, dark 전용 값) / Coporate-Light → `label/secondary/normal`(`#434648`) / Coporate-Dark → `label/secondary/normal`(`#CDD3D7`, dark 전용 값)
-  - Icon: 카드 그래픽 아이콘(24px, 이미지 에셋, personal/coporate × light/dark 4종)
+  - Corporate: bg `cool-neutral/10`(`#F1F3F4`, Light) / `rgba(241,243,244,0.04)`(Dark)
+  - 텍스트: `Caption01/Semibold` 13/19/-0.2%(실제-0.026px), Personal-Light → `label/primary/normal`(`#222426`) / Personal-Dark → `label/primary/normal`(`#F7F8F9`, dark 전용 값) / Corporate-Light → `label/secondary/normal`(`#434648`) / Corporate-Dark → `label/secondary/normal`(`#CDD3D7`, dark 전용 값)
+  - Icon: 카드 그래픽 아이콘(24px, 이미지 에셋, personal/corporate × light/dark 4종)
 - Square style: 48×48 고정, radius `Radius/16`(16px), 동일 배경색 규칙, 내부에 아이콘(24px) + 라벨("법인"/"개인", `Caption02/Semibold` 12/18/-0.2%(실제-0.024px)) 세로 배치
 
 ### 11.3 Chip/Date-filter — 참고: node 207:11770
@@ -537,8 +614,16 @@ UI 아이콘 사이즈 단계: 16 / 20 / 24 / 28px. Graphic(삽화형) 아이콘
 - Wide variant: 버튼 폭 고정 180px(신규 확인, 8월 기록 220px과 다름 — 이번 조회 값을 최신으로 채택)
 - State: type×variant 조합(One/Two-button × Normal/Strong/Wide) 4가지 실사용 조합 확인. Hover/Pressed `[Figma에서 확인 불가]`
 
-### 15.2 List-item — 참고: node 922:17832
-`[Figma에서 확인 불가: 이번 회차에 재조회하지 못함]`
+### 15.2 Modal-list-item(구 "Modal/List-item") — 참고: node 922:17832
+
+이전 회차에 `[Figma에서 확인 불가]`였던 컴포넌트를 이번에 채웠다. 영수증 등록 시 "사진/파일 선택" 액션시트에 쓰이는 것으로 보인다(§8.3 Thumnail, §8.4 Uploader-file, 홈 화면 "앨범에서 선택"/"파일에서 선택" 카드와 연관).
+
+- Variants: `type` = Photo | File
+- Auto Layout: vertical, padding Y `Padding/4`(4px)
+- 내부 Row: gap 15px(raw), 아이콘(Gallery/File, 32px) + 라벨 + 설명
+- 라벨: `Body03/Medium` 18/26/-0.3%(실제-0.054px) — "사진" 또는 "파일" color `label-primary-normal`(`#222426`) + "[필수]" color `label-brand-normal`(`#2A7FEC`), gap 2px
+- 설명: `Body04/Medium` 16/24/-0.3%(실제-0.048px), color `label-secondary-selected`(`#8C9499`) — Photo="앨범에서 영수증 이미지 첨부" / File="파일에서 영수증 이미지 첨부"
+- State: Photo / File 2종 — 별도 hover/pressed 없음
 
 ---
 
@@ -566,4 +651,6 @@ UI 아이콘 사이즈 단계: 16 / 20 / 24 / 28px. Graphic(삽화형) 아이콘
 
 ## 17. 컴포넌트 명명 규칙 참고
 
-Figma 원본에 아래와 같은 오타/불일치가 있다 — 그대로 두었다(임의 수정하지 않음): `Coporate-card`(Corporate 오타, §11.2/§12.1), `Card-item-recipt-list`/`Card-item-recipt-error`("receipt"→"recipt" 오타, §12.1/§12.2), `Chekced`(Checked 오타, 과거 기록), `skyBlu`(skyBlue 오타, 일부 §1.2 원본 토큰명에만 존재), `Colse-Title-left`(Close 오타, 과거 기록 — 이번 회차 Header 재조회 시 해당 정확한 variant명은 발견되지 않음).
+Figma 원본에 아래와 같은 오타/불일치가 있다 — 그대로 두었다(임의 수정하지 않음): `Card-item-recipt-list`/`Card-item-recipt-error`("receipt"→"recipt" 오타, §12.1/§12.2), `Thumnail`("Thumbnail" 오타, §8.3 — §13.1의 정상 철자 "Thumbnail"과 다른 별개 컴포넌트이니 혼동 주의), `Chekced`(Checked 오타, 과거 기록), `skyBlu`(skyBlue 오타, 일부 §1.2 원본 토큰명에만 존재), `Colse-Title-left`(Close 오타, 과거 기록 — 이번 회차 Header 재조회 시 해당 정확한 variant명은 발견되지 않음).
+
+> `Coporate-card`(Corporate 오타)는 2026-09-16에 Figma에서 수정되어 더 이상 존재하지 않는다 — §11.2 참고.
