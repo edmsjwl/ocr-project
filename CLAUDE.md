@@ -60,5 +60,5 @@ SBS 영수증전자화 — 영수증을 촬영/스캔해 OCR로 인식하고 정
 - [ ] 디자인 토큰이 코드화되는 위치(예: 테마 파일, CSS 변수, 상수 파일 등) — 정해지면 `DESIGN.md`의 토큰과 1:1 대응되게 유지
 
 ## 관련 문서
-- `DESIGN.md` — 디자인 시스템 레퍼런스 (색상/타이포/spacing/컴포넌트)
+- `DESIGN.md` — 디자인 시스템 레퍼런스 목차·표기 규칙 (실제 색상/타이포/spacing/컴포넌트 스펙은 `docs/design-system/01-foundation.md`~`06-display-feedback.md`에 있음)
 - Figma: `[SBS] OCR 프로젝트_디자인` (🔵 디자인시스템 페이지, node 39:2)
