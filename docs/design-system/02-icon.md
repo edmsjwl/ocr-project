@@ -15,7 +15,7 @@ UI 아이콘 사이즈: 16 / 20 / 24 / 28 / 32px(`Icon/Frame` 스와치 기준).
 - 28px: `close-circle/solid` `check-circle/solid`
 - Graphic 24px: `Img-warning/24`(Mode=light|dark), `Img-empty/24`(Mode=light|dark), `Img-card/24`(Type=personal|corporate × Mode=light|dark), `Iimg-nav/24`(Type=home|list × Mode=light|dark × Status=activated|disabled)
 - Graphic 32px: `Img-upload/32`(Property 1=Gallery|File, Property 3=light|dark)
-- Graphic 48px: `Img-warning/48`(Mode=light|dark × Color=red|gray, 프레임 52×52), `Img-upload/84` 프레임 안의 48px `Gallery|File` (light|dark)
+- Graphic 48px: `Img-warning/48`(Mode=light|dark × Color=red|gray, 프레임 52×52) — Color=red/light 인스턴스를 실제 사용처(SCR-02-005/영수증 등록/인식결과/실패, node 2082:117862)에서 export해 확인: 삼각형 채움 `#FF5252`, 테두리·느낌표 `label/primary/normal`(#222426). `#FF5252`는 01-foundation.md의 `status/rejected/normal`(#F44336)과는 다른 별도 값이다. gray 변형은 `[Figma에서 확인 불가]`로 남아있음. / `Img-upload/84` 프레임 안의 48px `Gallery|File` (light|dark)
 - Graphic 64px: `Img-empty/64`(Mode=light|dark)
 - Graphic 84px: `Img-loading/84`(Mode=light|dark)
 

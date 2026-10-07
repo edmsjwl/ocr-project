@@ -1,0 +1,392 @@
+<!--
+  메인 홈 화면 (v2)
+
+  ⚠️ Figma를 새로 조회하지 않고, 이 저장소의 docs/design-system/*.md와 기존 assets/만 근거로
+  구성했다(기존 screen-home.html은 그대로 두고, 이번 지침에 맞춰 별도 파일로 새로 만들었다).
+  각 블록 출처는 "파일명 → 컴포넌트명" 주석으로 표시했다. 문서에 없어서 이번 화면에서만
+  임의로 정한 값은 "※미정의"로 표시했다.
+
+  사용한 컴포넌트 매핑:
+    - 상단 로고           → 03-layout.md → Header, type=Home (LogoWise 64×22 + Logo 42×25, gap2)
+    - 앨범/파일 선택 카드  → 04-actions-inputs.md → Button-action-card
+    - 최근 제출 내역 리스트 → 05-containers-overlays.md → Card-item-receipt-list
+    - 하단 GNB(홈/영수증내역) → 03-layout.md → Navigation(Navigation-item/-menu/-bottom)
+      그림자는 01-foundation.md → Elevation의 `Shadow-Nav`(5레이어) 값을 그대로 옮겼다
+      (4번째 레이어는 alpha 0이라 시각적으로 보이지 않아 생략했다)
+
+  "최근 제출 내역" 섹션 컨테이너 자체(흰 카드, radius20)는 문서에 전용 컴포넌트가 없어 ※미정의로
+  둔 채 Button-action-card와 동일한 그림자 토큰만 재사용했다. 로고·카드종류 배지·체브론·홈/리스트
+  네비 아이콘은 assets/README.md에 기록된, Figma에서 실제 export한 SVG를 그대로 쓴다. 상태바
+  아이콘만 canonical node를 특정하지 못해 다른 화면들과 동일하게 인라인 SVG로 근사했다.
+-->
+<title>메인 홈</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root {
+    /* ---- Color — 01-foundation.md → Color(Semantic Light) ---- */
+    --bg-alternative: #f1f3f4;   /* cool-neutral-10 */
+    --bg-secondary: #ffffff;     /* common-0 */
+    --bg-inverse: #434648;       /* cool-neutral-80 */
+    --label-primary-normal: #222426;   /* cool-neutral-90 */
+    --label-secondary-normal: #434648; /* cool-neutral-80 */
+    --label-secondary-weak: #a2a9ae;   /* cool-neutral-50 */
+    --nav-pill-bg: #ebeef0;      /* foreground/normal/selected */
+    --nav-item-selected-bg: #f7f8f9; /* foreground/normal/normal */
+    --clear-blue-5: #eff8ff;
+    --cool-neutral-10: #f1f3f4;
+
+    --status-pending-subtle: #e1f5fe; --status-pending-normal: #03a9f4;
+    --status-processing-subtle: #e8f5e9; --status-processing-normal: #43a047;
+    --status-completed-subtle: #f1f3f4; --status-completed-normal: #8c9499;
+    --status-rejected-subtle: #ffebee; --status-rejected-normal: #f44336;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 40px 16px;
+    background: #e3e6e8;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+  }
+
+  .frame {
+    position: relative;
+    width: 375px; /* CLAUDE.md "iOS 375px 프레임 기준" */
+    height: 812px;
+    background: var(--bg-alternative);
+    overflow: hidden;
+    border-radius: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---- Status-bar — 03-layout.md → Status-bar, background=Alternative ---- */
+  .status-bar {
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    background: var(--bg-alternative);
+  }
+  .status-bar .time { font: 600 15px/1 'Pretendard'; color: var(--label-primary-normal); letter-spacing: -0.237px; }
+  .status-bar .icons { display: flex; align-items: center; gap: 6px; }
+
+  /* ---- Header — 03-layout.md → Header, type=Home, background=Alternative, H56 ---- */
+  .header {
+    height: 56px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    background: var(--bg-alternative);
+  }
+  .logo { display: flex; align-items: center; gap: 2px; }
+  .logo img.wordmark { height: 22px; width: 64px; }
+  .logo img.mark { height: 25px; width: 42px; }
+
+  /* ---- Body ---- */
+  .body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ---- Button-action-card — 04-actions-inputs.md → Button-action-card ----
+     W161×H110, radius16, padding top14/X16/bottom8, shadow 0 0 1.5px rgba(134,134,134,0.04) */
+  .action-cards { display: flex; gap: 12px; }
+  .action-card {
+    flex: 1;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    box-shadow: 0 0 1.5px rgba(134, 134, 134, 0.04);
+    padding: 14px 16px 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-family: 'Pretendard';
+  }
+  .action-card.gallery { height: 110px; }
+  .action-card.file { height: 94px; } /* ※미정의: 문서 스펙은 110 하나뿐, File 카드는 기존 화면과 비율만 맞춤 */
+  .action-card .label {
+    /* Body05/Bold 15/22/-0.3%(실제 -0.045px) */
+    font: 700 15px/22px 'Pretendard';
+    letter-spacing: -0.045px;
+    color: var(--label-primary-normal);
+  }
+  .action-card .icon-wrap { display: flex; justify-content: flex-end; }
+  .action-card .icon-wrap img { width: 48px; height: 48px; display: block; }
+
+  /* ---- 최근 제출 내역 컨테이너 — 문서에 전용 컴포넌트 없음(※미정의), 그림자만 Button-action-card 재사용 ---- */
+  .recent {
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    box-shadow: 0 0 1.5px rgba(134, 134, 134, 0.04);
+    padding: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px; /* ※미정의 */
+  }
+  .recent-title {
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .recent-title h2 {
+    margin: 0;
+    /* Body04/Bold 16/24/-0.3%(실제 -0.048px) */
+    font: 700 16px/24px 'Pretendard';
+    letter-spacing: -0.048px;
+    color: var(--label-primary-normal);
+  }
+  .see-all {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    /* Body06/Semibold 14/20/-0.3%(실제 -0.042px) — Button-text/XS 톤 재사용 */
+    font: 600 14px/20px 'Pretendard';
+    letter-spacing: -0.042px;
+    color: var(--label-secondary-weak);
+  }
+  .see-all img { display: block; width: 16px; height: 16px; }
+
+  .list { display: flex; flex-direction: column; gap: 28px; }
+
+  /* ---- Card-item-receipt-list — 05-containers-overlays.md → Card-item-receipt-list ----
+     W375×H49, padding X20, 바깥 gap8, 배지-텍스트 gap12. 상태 배지 padding X6/Y3 radius8 */
+  .card-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 0 20px;
+    background: var(--bg-secondary);
+    cursor: pointer;
+  }
+  .card-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 3px 8px;
+  }
+  .card-badge.personal { background: var(--clear-blue-5); }   /* Category-badge personal bg — 06-display-feedback.md */
+  .card-badge.corporate { background: var(--cool-neutral-10); } /* Category-badge corporate bg */
+  .card-badge img { width: 24px; height: 24px; display: block; }
+  .card-badge span {
+    /* Caption02/Semibold 12/18/-0.2%(실제 -0.024px) */
+    font: 600 12px/18px 'Pretendard';
+    letter-spacing: -0.024px;
+  }
+  .card-badge.personal span { color: var(--label-primary-normal); }
+  .card-badge.corporate span { color: var(--label-secondary-normal); }
+
+  .card-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .card-text .row1 { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .card-text .merchant {
+    /* Body05/Medium 15/22/-0.3%(실제 -0.045px) */
+    font: 500 15px/22px 'Pretendard';
+    letter-spacing: -0.045px;
+    color: var(--label-secondary-normal);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .card-text .amount {
+    /* Body05/Bold 15/22/-0.045px */
+    font: 700 15px/22px 'Pretendard';
+    letter-spacing: -0.045px;
+    color: var(--label-primary-normal);
+    white-space: nowrap;
+  }
+  .card-text .row2 { display: flex; align-items: center; justify-content: space-between; }
+  .card-text .datetime {
+    display: flex;
+    gap: 6px;
+    /* Body06/Medium 14/20/-0.3%(실제 -0.042px) */
+    font: 500 14px/20px 'Pretendard';
+    letter-spacing: -0.042px;
+    color: var(--label-secondary-weak);
+  }
+  .status-chip {
+    padding: 3px 6px;
+    border-radius: 8px;
+    /* Caption01/Semibold 13/19/-0.2%(실제 -0.026px) */
+    font: 600 13px/19px 'Pretendard';
+    letter-spacing: -0.026px;
+  }
+  .status-chip.pending { background: var(--status-pending-subtle); color: var(--status-pending-normal); }
+  .status-chip.processing { background: var(--status-processing-subtle); color: var(--status-processing-normal); }
+  .status-chip.completed { background: var(--status-completed-subtle); color: var(--status-completed-normal); }
+  .status-chip.rejected { background: var(--status-rejected-subtle); color: var(--status-rejected-normal); }
+
+  /* ---- 하단 Navigation — 03-layout.md → Navigation(Navigation-item/-menu/-bottom) ---- */
+  .nav-area { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
+  .nav-bar {
+    background: var(--nav-pill-bg);
+    height: 69px;
+    border-radius: 999px; /* number/64 pill */
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    /* Shadow-Nav — 01-foundation.md → Elevation(5레이어, 4번째는 alpha0이라 생략) */
+    box-shadow:
+      1px 3px 3px rgba(69, 81, 90, 0.09),
+      3px 7px 5px rgba(69, 81, 90, 0.05),
+      5px 13px 6px rgba(69, 81, 90, 0.01),
+      -1px -1px 10px rgba(69, 81, 90, 0.04);
+  }
+  .nav-item {
+    width: 100px;
+    height: 57px;
+    border-radius: 999px;
+    padding: 2px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Pretendard';
+  }
+  .nav-item.active { background: var(--nav-item-selected-bg); }
+  .nav-item span {
+    /* Caption01/Bold 13/19/-0.2%(실제 -0.026px) */
+    font: 700 13px/19px 'Pretendard';
+    letter-spacing: -0.026px;
+  }
+  .nav-item.active span { color: var(--label-primary-normal); }
+  .nav-item:not(.active) span { color: var(--label-secondary-weak); }
+  .nav-item img { width: 24px; height: 24px; display: block; }
+
+  .home-bar {
+    display: flex;
+    justify-content: center;
+    padding: 16px 10px 6px;
+    width: 100%;
+    background: transparent;
+  }
+  .home-bar .slider { width: 134px; height: 5px; border-radius: 4px; background: var(--bg-inverse); }
+</style>
+
+<div class="frame">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <span class="icons">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="#222426"/><rect x="5" y="5" width="3" height="7" rx="0.5" fill="#222426"/><rect x="10" y="3" width="3" height="9" rx="0.5" fill="#222426"/><rect x="15" y="0" width="3" height="12" rx="0.5" fill="#222426"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 10.2C8.66 10.2 9.2 9.66 9.2 9C9.2 8.34 8.66 7.8 8 7.8C7.34 7.8 6.8 8.34 6.8 9C6.8 9.66 7.34 10.2 8 10.2Z" fill="#222426"/><path d="M4.6 6.6C5.5 5.7 6.7 5.2 8 5.2C9.3 5.2 10.5 5.7 11.4 6.6" stroke="#222426" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M1.8 3.8C3.5 2.1 5.7 1.2 8 1.2C10.3 1.2 12.5 2.1 14.2 3.8" stroke="#222426" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="2.5" stroke="#222426"/><rect x="2" y="2" width="18" height="8" rx="1.5" fill="#222426"/><rect x="22.5" y="4" width="1.5" height="4" rx="0.7" fill="#222426"/></svg>
+    </span>
+  </div>
+
+  <div class="header">
+    <div class="logo">
+      <img class="wordmark" src="assets/logo-wise-wordmark.svg" alt="WiSE">
+      <img class="mark" src="assets/logo-scan-mark.svg" alt="스캔">
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="action-cards">
+      <button class="action-card gallery" type="button">
+        <span class="label">앨범에서 선택</span>
+        <div class="icon-wrap">
+          <img src="assets/img-gallery-48-light.svg" alt="">
+        </div>
+      </button>
+      <button class="action-card file" type="button">
+        <span class="label">파일에서 선택</span>
+        <div class="icon-wrap">
+          <img src="assets/img-file-48-light.svg" alt="">
+        </div>
+      </button>
+    </div>
+
+    <div class="recent">
+      <div class="recent-title">
+        <h2>최근 제출 내역</h2>
+        <button class="see-all" type="button" onclick="location.href='screen-receipt-history.html'" title="영수증 내역 탭으로 이동">
+          전체보기
+          <img src="assets/icon-chevron-right-20.svg" alt="">
+        </button>
+      </div>
+
+      <div class="list" id="cardList"></div>
+    </div>
+  </div>
+
+  <div class="nav-area">
+    <div class="nav-bar">
+      <button class="nav-item active" type="button">
+        <img src="assets/nav-home-activated-24.svg" alt="">
+        <span>홈</span>
+      </button>
+      <button class="nav-item" type="button" onclick="location.href='screen-receipt-history.html'">
+        <img src="assets/nav-list-disabled-24.svg" alt="">
+        <span>영수증 내역</span>
+      </button>
+    </div>
+    <div class="home-bar"><div class="slider"></div></div>
+  </div>
+</div>
+
+<script>
+  const CARD_ICON = {
+    personal: '<img src="assets/card-personal-light-24.svg" alt="">',
+    corporate: '<img src="assets/card-coporate-light-24.svg" alt="">'
+  };
+  const STATUS_LABEL = { pending: '대기', processing: '처리중', completed: '완료', rejected: '반려' };
+
+  // ※미정의: 실제 서비스 데이터 연동 전 샘플(screen-receipt-history.html 데이터와 날짜대를 맞췄다)
+  const rows = [
+    { card: 'personal',  merchant: '스타벅스목동SBS점', amount: '128,000', date: '09.18', time: '15:00', status: 'pending' },
+    { card: 'personal',  merchant: '스타벅스목동SBS점', amount: '128,000', date: '09.18', time: '15:00', status: 'processing' },
+    { card: 'corporate', merchant: '스타벅스목동SBS점', amount: '128,000', date: '09.18', time: '15:00', status: 'completed' },
+    { card: 'corporate', merchant: '이마트 용산점',     amount: '54,200',  date: '09.17', time: '11:20', status: 'rejected' },
+    { card: 'personal',  merchant: '교보문고 강남점',   amount: '32,000',  date: '09.16', time: '18:05', status: 'completed' },
+    { card: 'corporate', merchant: '스타벅스목동SBS점', amount: '128,000', date: '09.15', time: '09:40', status: 'rejected' },
+  ];
+
+  const list = document.getElementById('cardList');
+  rows.forEach(r => {
+    const row = document.createElement('div');
+    row.className = 'card-row';
+    row.innerHTML = `
+      <div class="card-badge ${r.card}">
+        ${CARD_ICON[r.card]}
+        <span>${r.card === 'personal' ? '개인' : '법인'}</span>
+      </div>
+      <div class="card-text">
+        <div class="row1">
+          <span class="merchant">${r.merchant}</span>
+          <span class="amount">${r.amount}원</span>
+        </div>
+        <div class="row2">
+          <span class="datetime"><span>${r.date}</span><span>${r.time}</span></span>
+          <span class="status-chip ${r.status}">${STATUS_LABEL[r.status]}</span>
+        </div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+</script>

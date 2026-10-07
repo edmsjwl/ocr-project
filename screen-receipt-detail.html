@@ -1,0 +1,363 @@
+<!--
+  영수증 상세내역 (Receipt Detail) 화면
+
+  ⚠️ Figma를 새로 조회하지 않고, 이 저장소의 docs/design-system/*.md와 기존 screen-*.html / assets/만
+  근거로 구성했다. 각 블록 출처는 "파일명 → 컴포넌트명" 주석으로 표시했다. 문서에 없어서 이번 화면에서만
+  임의로 정한 값은 "※미정의"로 표시했다.
+
+  사용한 컴포넌트 매핑:
+    - Header(뒤로가기)        → 03-layout.md → Header, type=Back
+    - 썸네일 + 돋보기          → 05-containers-overlays.md → Image-viewer-343*140(Size=M)
+    - 처리상태 배지            → 06-display-feedback.md → Content-badge(Size=Large)
+    - 카드 구분 배지           → 06-display-feedback.md → Category-badge(Round)
+    - 상세 필드 리스트         → 문서에 전용 "상세 정보 리스트" 컴포넌트가 없어, 기존 라벨/값 타이포 토큰
+                               (Textfield 계열 Body06/Body04)을 재사용해 label/value 행으로 구성했다(※미정의 레이아웃)
+    - 전체 카드 컨테이너       → 문서에 전용 "Detail-card" 컴포넌트가 없어, 01-foundation.md Elevation의
+                               `drop-shadow(0 0 1.5px rgba(134,134,134,0.04))`(Button-action-card·Skeleton에 쓰이는
+                               것과 동일한 값)를 가져와 카드 셸을 구성했다(※미정의 카드 자체, 그림자 값은 기존 값)
+    - 삭제 / 수정하기 CTA      → 06-display-feedback.md → Action-Area(Color=White, Two-button, Normal) 그대로 재사용
+      (반려/대기 상태일 때만 노출 — 요청대로 조건부 렌더링. "삭제"를 위험색으로 강조하는 별도 토큰은 문서에
+      없어서 임의로 빨간 버튼을 만들지 않았고, 기존 Two-button 레시피(Outlined+Solid)를 그대로 썼다)
+    - 관리자 문의 안내문       → "중요하지 않다"는 요청에 맞춰 Textfield Description(helper) 토큰
+                               (Body06/Medium 14/20/-0.042px label/secondary/selected)을 재사용해 가장 낮은
+                               시각 우선순위로 처리했다
+
+  영수증 이미지는 실제 사진 데이터가 없어 회색 placeholder로 대체했다(디자인 시스템 에셋이 아니라 런타임
+  데이터이므로 가짜 벡터를 만들지 않고 정직하게 placeholder로 표시).
+-->
+<title>영수증 상세</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root {
+    /* ---- Color — 01-foundation.md → Color(Semantic Light) ---- */
+    --bg-primary: #f7f8f9;
+    --bg-secondary: #ffffff;
+    --bg-inverse: #434648;
+    --label-primary-normal: #222426;
+    --label-secondary-normal: #434648;
+    --label-secondary-selected: #8c9499;
+    --label-secondary-weak: #a2a9ae;
+    --label-inverse: #ffffff;
+    --foreground-brand-normal: #2a7fec;
+    --clear-blue-5: #eff8ff;
+    --cool-neutral-10: #f1f3f4;
+    --line-normal-neutral: rgba(87, 94, 98, 0.16);
+    --line-normal-normal: rgba(87, 94, 98, 0.24);
+
+    --status-pending-subtle: #e1f5fe; --status-pending-normal: #03a9f4;
+    --status-processing-subtle: #e8f5e9; --status-processing-normal: #43a047;
+    --status-completed-subtle: #f1f3f4; --status-completed-normal: #8c9499;
+    --status-rejected-subtle: #ffebee; --status-rejected-normal: #f44336;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 40px 16px;
+    background: #e3e6e8;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+  }
+
+  .frame {
+    position: relative;
+    width: 375px; /* CLAUDE.md "iOS 375px 프레임 기준" */
+    height: 812px;
+    background: var(--bg-primary);
+    overflow: hidden;
+    border-radius: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---- Status-bar — 03-layout.md → Status-bar, background=Primary ---- */
+  .status-bar {
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+  }
+  .status-bar .time { font: 600 15px/1 'Pretendard'; color: var(--label-primary-normal); letter-spacing: -0.237px; }
+  .status-bar .icons { display: flex; align-items: center; gap: 6px; }
+
+  /* ---- Header — 03-layout.md → Header, type=Back, background=Primary ----
+     W375×H56, padding X20/Y16. 좌측 chevron-left/24 + 제목, gap4(내부 3). 제목 Body03/Semibold -0.054px */
+  .header {
+    height: 56px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 16px 20px;
+  }
+  .header .back-btn { border: none; background: none; padding: 0; cursor: pointer; display: flex; }
+  .header .back-btn img { width: 24px; height: 24px; display: block; }
+  .header .header-title {
+    font: 600 18px/26px 'Pretendard';
+    letter-spacing: -0.054px;
+    color: var(--label-primary-normal);
+  }
+
+  .body { flex: 1; overflow-y: auto; padding: 4px 16px 20px; }
+
+  /* ---- 상세 카드 컨테이너 — ※미정의 전용 컴포넌트, Elevation의 Button-action-card 그림자 재사용 ---- */
+  .detail-card {
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    box-shadow: 0 0 1.5px rgba(134, 134, 134, 0.04);
+    overflow: hidden;
+  }
+
+  /* ---- Image-viewer-343*140(M) — 05-containers-overlays.md ----
+     W343×H140, radius20, border1px line/normal/normal. 우측중앙 확대버튼 52×52(radius64, padding10, 아이콘24) */
+  .thumbnail-viewer {
+    position: relative;
+    width: 100%;
+    height: 140px;
+    border-radius: 20px;
+    border: 1px solid var(--line-normal-normal);
+    overflow: hidden;
+  }
+  .thumbnail-viewer .placeholder-img {
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(135deg, #e8eaec 0 10px, #eef0f1 10px 20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: var(--label-secondary-weak);
+  }
+  .thumbnail-viewer .zoom-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 52px;
+    height: 52px;
+    border-radius: 64px;
+    padding: 10px;
+    background: var(--bg-secondary);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 5px rgba(134, 134, 134, 0.2); /* ※미정의: 흰 버튼이 사진 위에서 보이도록 추가한 그림자 */
+  }
+  .thumbnail-viewer .zoom-btn img { width: 24px; height: 24px; display: block; }
+
+  .card-inner { padding: 16px; }
+
+  /* ---- 처리상태 / 카드구분 — 06-display-feedback.md → Content-badge(Large) / Category-badge(Round) ---- */
+  .status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0 16px;
+  }
+  .badge-large {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 10px;
+    /* Body05/Bold 15/22/-0.3%(실제 -0.045px) */
+    font-size: 15px;
+    line-height: 22px;
+    letter-spacing: -0.045px;
+    font-weight: 700;
+  }
+  .badge-large.pending { background: var(--status-pending-subtle); color: var(--status-pending-normal); }
+  .badge-large.processing { background: var(--status-processing-subtle); color: var(--status-processing-normal); }
+  .badge-large.completed { background: var(--status-completed-subtle); color: var(--status-completed-normal); }
+  .badge-large.rejected { background: var(--status-rejected-subtle); color: var(--status-rejected-normal); }
+
+  .category-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 999px;
+    /* Caption01/Semibold 13/19/-0.2%(실제 -0.026px) */
+    font-size: 13px;
+    line-height: 19px;
+    letter-spacing: -0.026px;
+    font-weight: 600;
+  }
+  .category-badge.personal { background: var(--clear-blue-5); color: var(--label-primary-normal); }
+  .category-badge.corporate { background: var(--cool-neutral-10); color: var(--label-secondary-normal); }
+
+  hr.divider { border: none; border-top: 1px solid var(--line-normal-neutral); margin: 0 0 16px; }
+
+  /* ---- 상세 필드 리스트 — 문서에 전용 컴포넌트 없음(※미정의), 라벨/값 타이포는 기존 토큰 재사용 ---- */
+  .field-list { display: flex; flex-direction: column; gap: 14px; } /* ※미정의 행간 */
+  .field-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .field-row .field-label {
+    flex-shrink: 0;
+    /* Body06/Medium 14/20/-0.3%(실제 -0.042px), label/secondary/selected — Textfield helper 톤 재사용 */
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.042px;
+    font-weight: 500;
+    color: var(--label-secondary-selected);
+  }
+  .field-row .field-value {
+    text-align: right;
+    /* Body04/Medium 16/24/-0.3%(실제 -0.048px), label/primary/normal */
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: -0.048px;
+    font-weight: 500;
+    color: var(--label-primary-normal);
+  }
+  .field-row .field-value.amount {
+    /* 금액만 강조 — Card-item-receipt-list 금액 스타일(Body05/Bold) 재사용 */
+    font-size: 15px;
+    line-height: 22px;
+    letter-spacing: -0.045px;
+    font-weight: 700;
+  }
+  .field-row.memo { flex-direction: column; align-items: stretch; gap: 6px; }
+  .field-row.memo .field-value { text-align: left; }
+
+  /* ---- 관리자 문의 안내문 — 중요도 낮음 → Textfield Description(helper) 토큰 그대로 ---- */
+  .admin-note {
+    margin: 16px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--line-normal-neutral);
+    /* Body06/Medium 14/20/-0.3%(실제 -0.042px) */
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.042px;
+    font-weight: 500;
+    color: var(--label-secondary-selected);
+  }
+
+  /* ---- Action-Area — 06-display-feedback.md → Action-Area(Color=White/Two-button/Normal) ---- */
+  .action-area {
+    flex-shrink: 0;
+    background: linear-gradient(180deg, rgba(247,248,249,0) 0.91%, rgba(247,248,249,0.53) 24.99%, var(--bg-primary) 50%);
+  }
+  .action-area .contents { display: flex; gap: 10px; padding: 10px 20px 20px; }
+  .action-area button {
+    flex: 1;
+    height: 52px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    /* Body04/Semibold 16/24/-0.3%(실제 -0.048px) */
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: -0.048px;
+    font-weight: 600;
+    padding: 14px 28px;
+  }
+  .action-area .alternative {
+    background: var(--bg-secondary);
+    border: 1px solid var(--line-normal-neutral);
+    color: var(--label-secondary-normal);
+  }
+  .action-area .main {
+    background: var(--foreground-brand-normal);
+    color: var(--label-inverse);
+  }
+  .home-bar { display: flex; justify-content: center; padding: 16px 10px 6px; background: var(--bg-primary); }
+  .home-bar .slider { width: 134px; height: 5px; border-radius: 4px; background: var(--bg-inverse); }
+</style>
+
+<div class="frame">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <span class="icons">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="#222426"/><rect x="5" y="5" width="3" height="7" rx="0.5" fill="#222426"/><rect x="10" y="3" width="3" height="9" rx="0.5" fill="#222426"/><rect x="15" y="0" width="3" height="12" rx="0.5" fill="#222426"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 10.2C8.66 10.2 9.2 9.66 9.2 9C9.2 8.34 8.66 7.8 8 7.8C7.34 7.8 6.8 8.34 6.8 9C6.8 9.66 7.34 10.2 8 10.2Z" fill="#222426"/><path d="M4.6 6.6C5.5 5.7 6.7 5.2 8 5.2C9.3 5.2 10.5 5.7 11.4 6.6" stroke="#222426" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M1.8 3.8C3.5 2.1 5.7 1.2 8 1.2C10.3 1.2 12.5 2.1 14.2 3.8" stroke="#222426" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="2.5" stroke="#222426"/><rect x="2" y="2" width="18" height="8" rx="1.5" fill="#222426"/><rect x="22.5" y="4" width="1.5" height="4" rx="0.7" fill="#222426"/></svg>
+    </span>
+  </div>
+
+  <div class="header">
+    <button class="back-btn" aria-label="뒤로가기" onclick="location.href='screen-receipt-history.html'">
+      <img src="assets/icon-chevron-left-24.svg" alt="">
+    </button>
+    <span class="header-title">영수증 상세</span>
+  </div>
+
+  <div class="body">
+    <div class="detail-card">
+      <div style="padding:16px 16px 0;">
+        <div class="thumbnail-viewer">
+          <div class="placeholder-img">영수증 이미지</div>
+          <button class="zoom-btn" type="button" aria-label="확대 보기" onclick="console.log('이미지 확대 — Image-viewer 확대 상호작용은 이번 화면 범위 밖')">
+            <img src="assets/icon-search-24.svg" alt="">
+          </button>
+        </div>
+      </div>
+
+      <div class="card-inner">
+        <div class="status-row">
+          <span class="badge-large" id="statusBadge"></span>
+          <span class="category-badge" id="categoryBadge"></span>
+        </div>
+        <hr class="divider">
+
+        <div class="field-list">
+          <div class="field-row">
+            <span class="field-label">프로그램</span>
+            <span class="field-value">예능 1팀 제작비</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">가맹점명</span>
+            <span class="field-value">스타벅스목동SBS점</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">승인번호</span>
+            <span class="field-value">202609180001</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">승인일시</span>
+            <span class="field-value">2026.09.18 15:00</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">사용금액</span>
+            <span class="field-value amount">128,000원</span>
+          </div>
+          <div class="field-row memo">
+            <span class="field-label">적요</span>
+            <span class="field-value">팀 회의 다과비로 사용했습니다.</span>
+          </div>
+        </div>
+
+        <p class="admin-note">적요 이외의 다른 정보 수정이 필요한 경우 관리자에게 요청하세요. 관리자는 해당 프로그램의 정산담당 PD입니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-area" id="actionArea">
+    <div class="contents">
+      <button class="alternative" type="button" onclick="console.log('삭제 — 확인 모달 등 후속 동작은 이번 화면 범위 밖')">삭제</button>
+      <button class="main" type="button" onclick="console.log('수정하기 — 수정 화면 이동은 이번 화면 범위 밖')">수정하기</button>
+    </div>
+    <div class="home-bar"><div class="slider"></div></div>
+  </div>
+</div>
+
+<script>
+  const STATUS_LABEL = { pending: '대기', processing: '처리중', completed: '완료', rejected: '반려' };
+  const CARD_LABEL = { personal: '개인카드', corporate: '법인카드' };
+
+  // ※미정의: 실제 데이터 연동 전 샘플. status를 pending/completed/processing/rejected로 바꿔보면
+  // CTA(삭제·수정하기) 노출 조건("반려, 대기인 경우만")이 바로 확인된다.
+  const receipt = { status: 'rejected', card: 'personal' };
+
+  document.getElementById('statusBadge').textContent = STATUS_LABEL[receipt.status];
+  document.getElementById('statusBadge').classList.add(receipt.status);
+
+  document.getElementById('categoryBadge').textContent = CARD_LABEL[receipt.card];
+  document.getElementById('categoryBadge').classList.add(receipt.card);
+
+  const showCta = receipt.status === 'rejected' || receipt.status === 'pending';
+  document.getElementById('actionArea').style.display = showCta ? '' : 'none';
+</script>

@@ -1,0 +1,193 @@
+<!--
+  영수증 등록 실패 화면 — Figma "🟢 진행중" 페이지에서 조회한 실제 화면 구현.
+
+  참조한 Figma 노드(fileKey ese9l01OJiDfirO8Q6XXIY):
+    - SCR-02-005/영수증 등록/인식결과/실패   2082:117862 (Light)
+    - Status-message-button(본문)           2082:117908
+    - Img-warning/48(Color=red, 본 화면 인스턴스) 2312:84462
+
+  Figma dev 주석(그대로 반영):
+    1. 업로드한 영수증이 모두 인식에 실패했을 때 해당 화면이 나타난다.
+    2. '확인' 버튼 선택 시 홈 화면으로 이동한다.
+
+  구조: Status-bar(Secondary) + Status-message-button(아이콘·제목·설명·버튼 1개) 뿐이다.
+  Header, 하단 Action-Area, Home-bar는 이 화면에 없다(실제 Figma 노드 트리에 존재하지 않음) —
+  지난 버전에서 "화면당 주요 액션 1개" 원칙을 적용해 하단 Action-Area를 임의로 추가했던 것은
+  실제 Figma와 다른 추측이었다. 이번에는 실제 노드 구조 그대로, 버튼 1개(확인)만 둔다.
+
+  경고 아이콘(Img-warning/48, Color=red)은 download_assets로 이 화면 인스턴스를 직접 export해서
+  얻은 실제 path를 그대로 옮겨왔다 — 삼각형 채움 #FF5252, 테두리·느낌표는 label/primary/normal
+  (#222426)이다. 이 레드는 01-foundation.md의 status/rejected/normal(#F44336)과는 다른 값인데,
+  이번에 처음 실측된 값이라 02-icon.md의 "[Figma에서 확인 불가]" 표시를 갱신해야 한다(별도 처리).
+
+  상태바 아이콘(Celluar/Wi-Fi/Battery)은 Figma 에셋 URL이 7일 후 만료되어 저장소에 직접 링크할 수
+  없으므로, 기존 screen-*.html 파일들과 동일하게 인라인 SVG로 재현했다.
+-->
+<title>영수증 등록 실패</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root {
+    /* ---- Color — 01-foundation.md → Color(Semantic Light) ---- */
+    --bg-secondary: #ffffff;
+    --static-white: #ffffff;
+    --label-primary-normal: #222426;   /* 아이콘 테두리·느낌표 */
+    --label-secondary-normal: #434648; /* 제목, 버튼 텍스트 */
+    --label-secondary-selected: #8c9499; /* 설명 */
+    /* line-normal 계열은 원색이 아니라 cool-neutral-70에 opacity를 얹은 값이다(01-foundation.md) */
+    --line-normal-neutral: rgba(87, 94, 98, 0.16); /* cool-neutral-70 opacity 16% */
+    /* Img-warning/48(Color=red) 삼각형 채움 — 이번에 Figma에서 처음 실측(기존 status-rejected 토큰과 다름) */
+    --icon-warning-red: #ff5252;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 40px 16px;
+    background: #e3e6e8;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+  }
+
+  .frame {
+    position: relative;
+    width: 375px; /* CLAUDE.md "iOS 375px 프레임 기준" */
+    height: 812px;
+    background: var(--bg-secondary); /* 루트 bg — Figma: bg-[...bg-secondary,white] */
+    overflow: hidden;
+    border-radius: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---- Status-bar — background=Secondary, label=Black(03-layout.md → Status-bar) ---- */
+  .status-bar {
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    background: var(--bg-secondary);
+  }
+  .status-bar .time { font: 600 15px/1 'Pretendard'; color: var(--label-primary-normal); letter-spacing: -0.237px; }
+  .status-bar .icons { display: flex; align-items: center; gap: 6px; }
+
+  /* ---- 본문 wrapper — Figma: px-20 py-160, top-44, w-375 ---- */
+  .content-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 160px 20px; /* Figma 그대로. 320px 패딩 + 본문으로 화면 하단에 여백이 남는 레이아웃이 맞다 */
+  }
+
+  /* ---- Status-message-button — 03-layout.md → Status-message(button 변형) ----
+     W343, padding Y80/X20, gap20(아이콘그룹↔버튼), 내부 title/desc 그룹 gap24 → gap6 */
+  .status-message-button {
+    width: 343px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 80px 20px;
+  }
+  .status-message-button .icon-text-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+  }
+  .warning-icon { width: 52px; height: 52px; flex-shrink: 0; }
+
+  .status-message-button .text-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+  .status-message-button .title {
+    margin: 0;
+    /* Body02/Semibold 20/28/-0.4%(실제 -0.08px) */
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: -0.08px;
+    font-weight: 600;
+    color: var(--label-secondary-normal);
+    text-align: center;
+  }
+  .status-message-button .desc {
+    margin: 0;
+    /* Body04/Medium 16/24/-0.3%(실제 -0.048px) */
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: -0.048px;
+    font-weight: 500;
+    color: var(--label-secondary-selected);
+    text-align: center;
+  }
+
+  /* ---- Button-solid(Assistive/Outlined/Medium) — 04-actions-inputs.md → Button-solid ----
+     H44, radius12, padding X20/Y10, border1 line/normal/neutral */
+  .status-message-button .confirm-btn {
+    height: 44px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--line-normal-neutral);
+    background: var(--static-white);
+    cursor: pointer;
+    /* Body05/Semibold 15/22/-0.3%(실제 -0.045px) */
+    font-size: 15px;
+    line-height: 22px;
+    letter-spacing: -0.045px;
+    font-weight: 600;
+    color: var(--label-secondary-normal);
+  }
+</style>
+
+<div class="frame">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <span class="icons">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="#222426"/><rect x="5" y="5" width="3" height="7" rx="0.5" fill="#222426"/><rect x="10" y="3" width="3" height="9" rx="0.5" fill="#222426"/><rect x="15" y="0" width="3" height="12" rx="0.5" fill="#222426"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 10.2C8.66 10.2 9.2 9.66 9.2 9C9.2 8.34 8.66 7.8 8 7.8C7.34 7.8 6.8 8.34 6.8 9C6.8 9.66 7.34 10.2 8 10.2Z" fill="#222426"/><path d="M4.6 6.6C5.5 5.7 6.7 5.2 8 5.2C9.3 5.2 10.5 5.7 11.4 6.6" stroke="#222426" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M1.8 3.8C3.5 2.1 5.7 1.2 8 1.2C10.3 1.2 12.5 2.1 14.2 3.8" stroke="#222426" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="2.5" stroke="#222426"/><rect x="2" y="2" width="18" height="8" rx="1.5" fill="#222426"/><rect x="22.5" y="4" width="1.5" height="4" rx="0.7" fill="#222426"/></svg>
+    </span>
+  </div>
+
+  <div class="content-wrap">
+    <div class="status-message-button">
+      <div class="icon-text-group">
+        <!-- Img-warning/48, Color=red — Figma node 2312:84462 export에서 추출한 실제 path -->
+        <svg class="warning-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g transform="translate(-145.5,-80)">
+            <path d="M192.002 125.013C191.35 125.397 190.608 125.603 189.852 125.611H171.5V86.3887C172.245 86.3887 172.977 86.5806 173.626 86.946C174.275 87.3114 174.819 87.8378 175.205 88.4746L193.557 119.111C193.935 119.767 194.135 120.509 194.137 121.266C194.139 122.023 193.943 122.767 193.569 123.424C193.194 124.081 192.654 124.629 192.002 125.013Z" fill="#FF5252"/>
+            <path d="M151.02 125.013C151.672 125.397 152.413 125.603 153.17 125.611H171.522V86.3887C170.777 86.3887 170.045 86.5806 169.396 86.946C168.747 87.3114 168.203 87.8378 167.817 88.4746L149.465 119.111C149.087 119.767 148.886 120.509 148.884 121.266C148.882 122.023 149.078 122.767 149.453 123.424C149.828 124.081 150.368 124.629 151.02 125.013Z" fill="#FF5252"/>
+            <path d="M171.5 99.6113V110.246" stroke="#222426" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M171.5 116.833H171.522" stroke="#222426" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M167.795 88.4746L149.443 119.111C149.065 119.767 148.864 120.509 148.862 121.266C148.86 122.023 149.056 122.767 149.431 123.424C149.806 124.081 150.346 124.629 150.998 125.013C151.65 125.397 152.391 125.603 153.148 125.611H189.851C190.608 125.603 191.349 125.397 192.001 125.013C192.653 124.629 193.194 124.081 193.568 123.424C193.943 122.767 194.139 122.023 194.137 121.266C194.135 120.509 193.935 119.767 193.556 119.111L175.205 88.4746C174.818 87.8378 174.275 87.3114 173.626 86.946C172.977 86.5806 172.244 86.3887 171.5 86.3887C170.755 86.3887 170.023 86.5806 169.374 86.946C168.725 87.3114 168.181 87.8378 167.795 88.4746Z" stroke="#222426" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </svg>
+
+        <div class="text-group">
+          <p class="title">영수증을 모두 인식하지 못했어요</p>
+          <p class="desc">영수증을 다시 선택해 주세요.</p>
+        </div>
+      </div>
+
+      <button class="confirm-btn" onclick="goHome()">확인</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function goHome() {
+    // Figma dev 주석: "'확인' 버튼 선택시 홈화면으로 이동합니다."
+    location.href = 'screen-home.html';
+  }
+</script>
