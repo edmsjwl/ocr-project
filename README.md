@@ -24,6 +24,7 @@ docs/design-system/ 스펙을 근거로 만든 정적 HTML 프로토타입입니
 - screen-phone-auth.html — 휴대폰 인증(상태 전환 가능한 인터랙티브 프로토타입)
 - screen-receipt-history.html — 영수증 내역(월별 조회·상태 필터·처리 상태 안내 모달)
 - screen-receipt-detail.html — 영수증 상세내역(반려·대기 상태일 때 삭제·수정하기 CTA 노출)
+- screen-receipt-detail-v2.html — 영수증 상세내역(재구현판) — screen-receipt-detail.html과 내용 동일, 별도 파일로 새로 작성
 - screen-receipt-register-fail.html — 영수증 등록 실패
 - design-system-test.html — 디자인 시스템 컴포넌트 테스트 페이지
 
