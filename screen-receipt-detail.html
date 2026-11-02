@@ -6,16 +6,16 @@
   임의로 정한 값은 "※미정의"로 표시했다.
 
   사용한 컴포넌트 매핑:
-    - Header(뒤로가기)        → 03-layout.md → Header, type=Back
-    - 썸네일 + 돋보기          → 05-containers-overlays.md → Image-viewer-343*140(Size=M)
-    - 처리상태 배지            → 06-display-feedback.md → Content-badge(Size=Large)
-    - 카드 구분 배지           → 06-display-feedback.md → Category-badge(Round)
+    - Header(뒤로가기)        → layout.md → Header, type=Back
+    - 썸네일 + 돋보기          → containers-overlays.md → Image-viewer-343*140(Size=M)
+    - 처리상태 배지            → display-feedback.md → Content-badge(Size=Large)
+    - 카드 구분 배지           → display-feedback.md → Category-badge(Round)
     - 상세 필드 리스트         → 문서에 전용 "상세 정보 리스트" 컴포넌트가 없어, 기존 라벨/값 타이포 토큰
                                (Textfield 계열 Body06/Body04)을 재사용해 label/value 행으로 구성했다(※미정의 레이아웃)
-    - 전체 카드 컨테이너       → 문서에 전용 "Detail-card" 컴포넌트가 없어, 01-foundation.md Elevation의
+    - 전체 카드 컨테이너       → 문서에 전용 "Detail-card" 컴포넌트가 없어, foundation.md Elevation의
                                `drop-shadow(0 0 1.5px rgba(134,134,134,0.04))`(Button-action-card·Skeleton에 쓰이는
                                것과 동일한 값)를 가져와 카드 셸을 구성했다(※미정의 카드 자체, 그림자 값은 기존 값)
-    - 삭제 / 수정하기 CTA      → 06-display-feedback.md → Action-Area(Color=White, Two-button, Normal) 그대로 재사용
+    - 삭제 / 수정하기 CTA      → display-feedback.md → Action-Area(Color=White, Two-button, Normal) 그대로 재사용
       (반려/대기 상태일 때만 노출 — 요청대로 조건부 렌더링. "삭제"를 위험색으로 강조하는 별도 토큰은 문서에
       없어서 임의로 빨간 버튼을 만들지 않았고, 기존 Two-button 레시피(Outlined+Solid)를 그대로 썼다)
     - 관리자 문의 안내문       → "중요하지 않다"는 요청에 맞춰 Textfield Description(helper) 토큰
@@ -29,7 +29,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <style>
   :root {
-    /* ---- Color — 01-foundation.md → Color(Semantic Light) ---- */
+    /* ---- Color — foundation.md → Color(Semantic Light) ---- */
     --bg-primary: #f7f8f9;
     --bg-secondary: #ffffff;
     --bg-inverse: #434648;
@@ -73,7 +73,7 @@
     flex-direction: column;
   }
 
-  /* ---- Status-bar — 03-layout.md → Status-bar, background=Primary ---- */
+  /* ---- Status-bar — layout.md → Status-bar, background=Primary ---- */
   .status-bar {
     height: 44px;
     flex-shrink: 0;
@@ -85,7 +85,7 @@
   .status-bar .time { font: 600 15px/1 'Pretendard'; color: var(--label-primary-normal); letter-spacing: -0.237px; }
   .status-bar .icons { display: flex; align-items: center; gap: 6px; }
 
-  /* ---- Header — 03-layout.md → Header, type=Back, background=Primary ----
+  /* ---- Header — layout.md → Header, type=Back, background=Primary ----
      W375×H56, padding X20/Y16. 좌측 chevron-left/24 + 제목, gap4(내부 3). 제목 Body03/Semibold -0.054px */
   .header {
     height: 56px;
@@ -113,7 +113,7 @@
     overflow: hidden;
   }
 
-  /* ---- Image-viewer-343*140(M) — 05-containers-overlays.md ----
+  /* ---- Image-viewer-343*140(M) — containers-overlays.md ----
      W343×H140, radius20, border1px line/normal/normal. 우측중앙 확대버튼 52×52(radius64, padding10, 아이콘24) */
   .thumbnail-viewer {
     position: relative;
@@ -154,7 +154,7 @@
 
   .card-inner { padding: 16px; }
 
-  /* ---- 처리상태 / 카드구분 — 06-display-feedback.md → Content-badge(Large) / Category-badge(Round) ---- */
+  /* ---- 처리상태 / 카드구분 — display-feedback.md → Content-badge(Large) / Category-badge(Round) ---- */
   .status-row {
     display: flex;
     align-items: center;
@@ -236,7 +236,7 @@
     color: var(--label-secondary-selected);
   }
 
-  /* ---- Action-Area — 06-display-feedback.md → Action-Area(Color=White/Two-button/Normal) ---- */
+  /* ---- Action-Area — display-feedback.md → Action-Area(Color=White/Two-button/Normal) ---- */
   .action-area {
     flex-shrink: 0;
     background: linear-gradient(180deg, rgba(247,248,249,0) 0.91%, rgba(247,248,249,0.53) 24.99%, var(--bg-primary) 50%);

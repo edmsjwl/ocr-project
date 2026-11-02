@@ -44,7 +44,7 @@ Content-badge, Category-badge 2종.
 | Gray | `status/completed/subtle` → rgba(241,243,244,0.72) | `status/completed/normal`(#8C9499) |
 | Black | `foreground/normal/weak`(#F1F3F4) | `label/primary/selected`(#575E62) |
 
-subtle 계열 bg는 [01-foundation.md → Color](01-foundation.md#color)의 opacity 규칙대로 rgba로 렌더한다.
+subtle 계열 bg는 [foundation.md → Color](foundation.md#color)의 opacity 규칙대로 rgba로 렌더한다.
 
 **Usage**
 - 조회한 인스턴스: Small 5색 전부, Medium Black, Large Green(나머지 조합은 동일 규칙으로 정의되어 있으나 개별 조회는 안 함)
@@ -119,7 +119,7 @@ Action-area 1종.
 | Default | Normal | `Neutral` | 있음 | 있음 |
 | Dark | Normal | `Neutral` | 있음 | 있음 |
 
-같은 형태의 Two-button이 White에서는 variant명 `Normal`, Default·Dark에서는 `Neutral`로 다르다([01-foundation.md → 명명 불일치](01-foundation.md#명명-불일치) 참고).
+같은 형태의 Two-button이 White에서는 variant명 `Normal`, Default·Dark에서는 `Neutral`로 다르다([foundation.md → 명명 불일치](foundation.md#명명-불일치) 참고).
 
 **Size & Layout**
 - W 375. Contents 영역 padding: top `Padding/10`(10px) / X `Padding/20`(20px) / bottom `Padding/20`(20px)

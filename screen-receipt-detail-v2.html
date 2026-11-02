@@ -1,29 +1,52 @@
 <!--
-  영수증 상세내역 (Receipt Detail) 화면 — v2
+  영수증 상세내역 (Receipt Detail) 화면 — v2 (Skills.md "UI Design Skill" 적용판)
 
-  ⚠️ "Skills.md만 참고해서 만들어달라"는 요청이 있었으나, 이 세션에서 Skills.md는 계속 0바이트로
-  확인되어(에디터 미저장 추정) 실제로 참고할 내용이 없었다. 대신 채팅에 직접 적힌 요구사항 +
-  이 저장소의 docs/design-system/*.md, 기존 screen-receipt-detail.html만 근거로 다시 작성했다.
-  내용은 기존 screen-receipt-detail.html과 동일하다(사용자 확인: 처리상태 필드 유지, CTA는
-  반려·대기 상태일 때만 노출) — 기존 파일은 그대로 두고 이번 요청대로 별도 파일로 새로 만들었다.
-  Figma는 이번에도 새로 조회하지 않았다.
+  Skills.md가 이번에 저장되어 내용을 확인했다 — 디자인 시스템 규칙을 기계적으로 적용하지 말고
+  정보를 Primary/Secondary/Status/Control로 분류해 위계·그룹핑·간격을 "판단"하라는 UI 설계
+  기준이다. 이 기준으로 기존 구현(모든 필드를 동일 타이포·동일 간격으로 나열한 리스트)을
+  재검토해 재설계했다. Figma는 조회하지 않고 docs/design-system/*.md의 기존 토큰만 재사용했다
+  (Skill 자체가 "Skill에서 새로운 스타일 값을 정의하지 않는다"고 명시한다).
+
+  [구현 전 설계 결정 — Skills.md §4]
+    1. 화면 목적/행동: 제출한 영수증 1건의 처리 결과를 확인하고, 필요하면 삭제·수정한다.
+    2. 정보 우선순위/그룹핑:
+       - Primary(헤드라인): 가맹점명 + 사용금액 — 사용자가 가장 먼저 찾는 "무엇을 얼마에" 정보
+       - Status: 처리상태 배지 — 헤드라인 바로 위에서 빠르게 스캔되도록 유지
+       - Secondary(메타): 카드구분·프로그램·승인번호·승인일시 — 조회/증빙용 참고 정보라 2열 그리드로 압축
+       - 적요는 메타 그리드와 성격이 달라(자유 서술형 텍스트) 별도 블록으로 분리
+       - Control: 돋보기(확대), 삭제/수정하기 — 기존과 동일하되 삭제/수정은 여전히 반려·대기 상태에서만 노출
+    3. 컴포넌트/레이아웃: 기존 Content-badge/Category-badge/Image-viewer/Action-Area 매핑은 유지하고,
+       "상세 필드 리스트"만 균일한 1열 리스트 → 헤드라인 / 메타 그리드(2열) / 적요 블록 3단으로 재구성
+    4. 시각적 위계/밀도: 가맹점명·금액만 크고 굵게(Body03/Semibold, Heading03/Bold)써서 먼저 읽히게 하고,
+       메타 4항목은 더 작은 톤(Caption02 라벨 + Body05 값)으로 낮춰 압축했다. 간격도 그룹별로 다르게
+       줬다(헤드라인 내부는 촘촘히, 그룹 사이는 구분선 + 여백으로 분리) — 전부 동일 gap을 쓰지 않았다.
 
   사용한 컴포넌트 매핑:
-    - Header(뒤로가기)        → 03-layout.md → Header, type=Back
-    - 썸네일 + 돋보기          → 05-containers-overlays.md → Image-viewer-343*140(Size=M)
-    - 처리상태 배지            → 06-display-feedback.md → Content-badge(Size=Large)
-    - 카드 구분 배지           → 06-display-feedback.md → Category-badge(Round)
-    - 상세 필드 리스트         → 문서에 전용 "상세 정보 리스트" 컴포넌트가 없어, 기존 라벨/값 타이포 토큰
-                               (Textfield 계열 Body06/Body04)을 재사용해 label/value 행으로 구성했다(※미정의 레이아웃)
-    - 전체 카드 컨테이너       → 문서에 전용 "Detail-card" 컴포넌트가 없어, 01-foundation.md Elevation의
+    - Header(뒤로가기)        → layout.md → Header, type=Back
+    - 썸네일 + 돋보기          → containers-overlays.md → Image-viewer-343*140(Size=M)
+    - 처리상태 배지            → display-feedback.md → Content-badge(Size=Large)
+    - 카드 구분 배지           → display-feedback.md → Category-badge(Round)
+    - 가맹점명/금액(헤드라인)   → foundation.md Typography의 Body03/Semibold(18/26), Heading03/Bold(24/34)를
+                               재사용 — "금액 전용 색"이나 새 사이즈를 만들지 않고 기존 스케일 중 더 큰 것을 골랐다
+    - 메타 그리드(카드구분/프로그램/승인번호/승인일시) → 전용 컴포넌트 없음(※미정의 레이아웃), 라벨은
+      Caption02(12/18), 값은 Body05/Medium(15/22) — 기존 리스트보다 한 단계 낮은 기존 토큰으로 축소
+    - 적요 블록               → Body04/Medium(16/24) 그대로, 헤드라인·메타와 분리된 별도 섹션으로 구성
+    - 전체 카드 컨테이너       → 문서에 전용 "Detail-card" 컴포넌트가 없어, foundation.md Elevation의
                                `drop-shadow(0 0 1.5px rgba(134,134,134,0.04))`(Button-action-card·Skeleton에 쓰이는
                                것과 동일한 값)를 가져와 카드 셸을 구성했다(※미정의 카드 자체, 그림자 값은 기존 값)
-    - 삭제 / 수정하기 CTA      → 06-display-feedback.md → Action-Area(Color=White, Two-button, Normal) 그대로 재사용
+    - 삭제 / 수정하기 CTA      → display-feedback.md → Action-Area(Color=White, Two-button, Normal) 그대로 재사용
       (반려/대기 상태일 때만 노출. "삭제"를 위험색으로 강조하는 별도 토큰은 문서에 없어서 임의로
       빨간 버튼을 만들지 않았고, 기존 Two-button 레시피(Outlined+Solid)를 그대로 썼다)
     - 관리자 문의 안내문       → "중요하지 않다"는 요청에 맞춰 Textfield Description(helper) 토큰
                                (Body06/Medium 14/20/-0.042px label/secondary/selected)을 재사용해 가장 낮은
                                시각 우선순위로 처리했다
+
+  [결과 검토 — Skills.md §5, 브라우저로 렌더링 확인 완료]
+    - 정보구조: 헤드라인(가맹점명·금액) → 상태 → 메타 4항목 → 적요 → 관리자 안내 순으로 중요도 내림차순 배치
+    - 레이아웃: 메타 4항목은 반복 구조라 2열 그리드로 정렬축을 맞춤
+    - 시각적 위계: 금액이 화면에서 가장 큰 텍스트가 되도록 조정(기존엔 다른 필드와 동일 크기였음)
+    - 간격/밀도: 그룹 내부 gap(8~10px)과 그룹 사이 gap(구분선+20px)을 다르게 둬서 기계적 균등 간격을 피함
+    - 디자인 시스템 준수: 새 색상·새 타이포 사이즈를 만들지 않고 기존 토큰 재조합만으로 위계를 표현
 
   영수증 이미지는 실제 사진 데이터가 없어 회색 placeholder로 대체했다(디자인 시스템 에셋이 아니라 런타임
   데이터이므로 가짜 벡터를 만들지 않고 정직하게 placeholder로 표시).
@@ -32,7 +55,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <style>
   :root {
-    /* ---- Color — 01-foundation.md → Color(Semantic Light) ---- */
+    /* ---- Color — foundation.md → Color(Semantic Light) ---- */
     --bg-primary: #f7f8f9;
     --bg-secondary: #ffffff;
     --bg-inverse: #434648;
@@ -76,7 +99,7 @@
     flex-direction: column;
   }
 
-  /* ---- Status-bar — 03-layout.md → Status-bar, background=Primary ---- */
+  /* ---- Status-bar — layout.md → Status-bar, background=Primary ---- */
   .status-bar {
     height: 44px;
     flex-shrink: 0;
@@ -88,7 +111,7 @@
   .status-bar .time { font: 600 15px/1 'Pretendard'; color: var(--label-primary-normal); letter-spacing: -0.237px; }
   .status-bar .icons { display: flex; align-items: center; gap: 6px; }
 
-  /* ---- Header — 03-layout.md → Header, type=Back, background=Primary ----
+  /* ---- Header — layout.md → Header, type=Back, background=Primary ----
      W375×H56, padding X20/Y16. 좌측 chevron-left/24 + 제목, gap4(내부 3). 제목 Body03/Semibold -0.054px */
   .header {
     height: 56px;
@@ -116,7 +139,7 @@
     overflow: hidden;
   }
 
-  /* ---- Image-viewer-343*140(M) — 05-containers-overlays.md ----
+  /* ---- Image-viewer-343*140(M) — containers-overlays.md ----
      W343×H140, radius20, border1px line/normal/normal. 우측중앙 확대버튼 52×52(radius64, padding10, 아이콘24) */
   .thumbnail-viewer {
     position: relative;
@@ -157,15 +180,13 @@
 
   .card-inner { padding: 16px; }
 
-  /* ---- 처리상태 / 카드구분 — 06-display-feedback.md → Content-badge(Large) / Category-badge(Round) ---- */
-  .status-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 4px 0 16px;
-  }
+  /* ---- 헤드라인(Primary) — 가맹점명+금액을 화면에서 가장 크게. Skills.md §3 "핵심 정보 우선 인지" ---- */
+  .headline { padding: 4px 0 16px; }
+
+  /* 처리상태 — display-feedback.md → Content-badge(Large). 헤드라인 위에서 빠르게 스캔되도록 배치 */
   .badge-large {
     display: inline-block;
+    margin-bottom: 10px;
     padding: 6px 12px;
     border-radius: 10px;
     /* Body05/Bold 15/22/-0.3%(실제 -0.045px) */
@@ -179,9 +200,58 @@
   .badge-large.completed { background: var(--status-completed-subtle); color: var(--status-completed-normal); }
   .badge-large.rejected { background: var(--status-rejected-subtle); color: var(--status-rejected-normal); }
 
+  .merchant-name {
+    margin: 0;
+    /* Body03/Semibold 18/26/-0.3%(실제 -0.054px) — foundation.md Typography */
+    font-size: 18px;
+    line-height: 26px;
+    letter-spacing: -0.054px;
+    font-weight: 600;
+    color: var(--label-secondary-normal);
+  }
+  .amount-display {
+    margin: 2px 0 0;
+    /* Heading03/Bold 24/34/-0.4%(실제 -0.096px) — 기존 스케일 중 가장 큰 톤을 재사용해 금액을 강조 */
+    font-size: 24px;
+    line-height: 34px;
+    letter-spacing: -0.096px;
+    font-weight: 700;
+    color: var(--label-primary-normal);
+  }
+
+  hr.divider { border: none; border-top: 1px solid var(--line-normal-neutral); margin: 0 0 16px; }
+
+  /* ---- 메타 그리드(Secondary) — 카드구분/프로그램/승인번호/승인일시. 반복 구조라 2열로 압축 ----
+     전용 컴포넌트 없음(※미정의 레이아웃). 헤드라인보다 한 단계 낮은 기존 토큰(Caption02/Body05)만 사용 */
+  .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 16px;
+    column-gap: 12px;
+    padding-bottom: 16px;
+  }
+  .meta-cell { display: flex; flex-direction: column; gap: 4px; }
+  .meta-cell .meta-label {
+    /* Caption02/Semibold 12/18/-0.2%(실제 -0.024px) */
+    font-size: 12px;
+    line-height: 18px;
+    letter-spacing: -0.024px;
+    font-weight: 600;
+    color: var(--label-secondary-selected);
+  }
+  .meta-cell .meta-value {
+    /* Body05/Medium 15/22/-0.3%(실제 -0.045px) — 기존(Body04/16px)보다 한 단계 낮춤 */
+    font-size: 15px;
+    line-height: 22px;
+    letter-spacing: -0.045px;
+    font-weight: 500;
+    color: var(--label-primary-normal);
+  }
+
   .category-badge {
     display: inline-flex;
     align-items: center;
+    width: fit-content;
     padding: 3px 8px;
     border-radius: 999px;
     /* Caption01/Semibold 13/19/-0.2%(실제 -0.026px) */
@@ -193,38 +263,31 @@
   .category-badge.personal { background: var(--clear-blue-5); color: var(--label-primary-normal); }
   .category-badge.corporate { background: var(--cool-neutral-10); color: var(--label-secondary-normal); }
 
-  hr.divider { border: none; border-top: 1px solid var(--line-normal-neutral); margin: 0 0 16px; }
-
-  /* ---- 상세 필드 리스트 — 문서에 전용 컴포넌트 없음(※미정의), 라벨/값 타이포는 기존 토큰 재사용 ---- */
-  .field-list { display: flex; flex-direction: column; gap: 14px; } /* ※미정의 행간 */
-  .field-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
-  .field-row .field-label {
-    flex-shrink: 0;
-    /* Body06/Medium 14/20/-0.3%(실제 -0.042px), label/secondary/selected — Textfield helper 톤 재사용 */
+  /* ---- 적요 — 메타 그리드와 성격이 다른 자유 서술형 텍스트라 별도 블록으로 분리 ---- */
+  .memo-block {
+    padding-top: 16px;
+    border-top: 1px solid var(--line-normal-neutral);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .memo-block .memo-label {
+    /* Body06/Medium 14/20/-0.042px — meta-label보다는 한 톤 높여 "항목"이 아닌 "섹션"임을 구분 */
     font-size: 14px;
     line-height: 20px;
     letter-spacing: -0.042px;
     font-weight: 500;
     color: var(--label-secondary-selected);
   }
-  .field-row .field-value {
-    text-align: right;
-    /* Body04/Medium 16/24/-0.3%(실제 -0.048px), label/primary/normal */
+  .memo-block .memo-text {
+    margin: 0;
+    /* Body04/Medium 16/24/-0.3%(실제 -0.048px) */
     font-size: 16px;
     line-height: 24px;
     letter-spacing: -0.048px;
     font-weight: 500;
     color: var(--label-primary-normal);
   }
-  .field-row .field-value.amount {
-    /* 금액만 강조 — Card-item-receipt-list 금액 스타일(Body05/Bold) 재사용 */
-    font-size: 15px;
-    line-height: 22px;
-    letter-spacing: -0.045px;
-    font-weight: 700;
-  }
-  .field-row.memo { flex-direction: column; align-items: stretch; gap: 6px; }
-  .field-row.memo .field-value { text-align: left; }
 
   /* ---- 관리자 문의 안내문 — 중요도 낮음 → Textfield Description(helper) 토큰 그대로 ---- */
   .admin-note {
@@ -239,7 +302,7 @@
     color: var(--label-secondary-selected);
   }
 
-  /* ---- Action-Area — 06-display-feedback.md → Action-Area(Color=White/Two-button/Normal) ---- */
+  /* ---- Action-Area — display-feedback.md → Action-Area(Color=White/Two-button/Normal) ---- */
   .action-area {
     flex-shrink: 0;
     background: linear-gradient(180deg, rgba(247,248,249,0) 0.91%, rgba(247,248,249,0.53) 24.99%, var(--bg-primary) 50%);
@@ -300,37 +363,35 @@
       </div>
 
       <div class="card-inner">
-        <div class="status-row">
+        <div class="headline">
           <span class="badge-large" id="statusBadge"></span>
-          <span class="category-badge" id="categoryBadge"></span>
+          <p class="merchant-name" id="merchantName">스타벅스목동SBS점</p>
+          <p class="amount-display" id="amountDisplay">128,000원</p>
         </div>
         <hr class="divider">
 
-        <div class="field-list">
-          <div class="field-row">
-            <span class="field-label">프로그램</span>
-            <span class="field-value">예능 1팀 제작비</span>
+        <div class="meta-grid">
+          <div class="meta-cell">
+            <span class="meta-label">카드 구분</span>
+            <span class="category-badge" id="categoryBadge"></span>
           </div>
-          <div class="field-row">
-            <span class="field-label">가맹점명</span>
-            <span class="field-value">스타벅스목동SBS점</span>
+          <div class="meta-cell">
+            <span class="meta-label">프로그램</span>
+            <span class="meta-value">예능 1팀 제작비</span>
           </div>
-          <div class="field-row">
-            <span class="field-label">승인번호</span>
-            <span class="field-value">202609180001</span>
+          <div class="meta-cell">
+            <span class="meta-label">승인번호</span>
+            <span class="meta-value">202609180001</span>
           </div>
-          <div class="field-row">
-            <span class="field-label">승인일시</span>
-            <span class="field-value">2026.09.18 15:00</span>
+          <div class="meta-cell">
+            <span class="meta-label">승인일시</span>
+            <span class="meta-value">2026.09.18 15:00</span>
           </div>
-          <div class="field-row">
-            <span class="field-label">사용금액</span>
-            <span class="field-value amount">128,000원</span>
-          </div>
-          <div class="field-row memo">
-            <span class="field-label">적요</span>
-            <span class="field-value">팀 회의 다과비로 사용했습니다.</span>
-          </div>
+        </div>
+
+        <div class="memo-block">
+          <span class="memo-label">적요</span>
+          <p class="memo-text">팀 회의 다과비로 사용했습니다.</p>
         </div>
 
         <p class="admin-note">적요 이외의 다른 정보 수정이 필요한 경우 관리자에게 요청하세요. 관리자는 해당 프로그램의 정산담당 PD입니다.</p>

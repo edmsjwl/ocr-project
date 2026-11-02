@@ -91,7 +91,7 @@ Status 토큰명(pending/processing/completed/rejected)은 영수증 상태 라�
 
 Dark 프레임에서 함께 조회된 atomic 값: `Clear Blue/90 #1E488A`, `Clear Blue/30 #93D2FD`, `Clear Blue/10 #DBEEFE`, `Green/50 #4CAF50`, `Red/A20 #FF5252`, `Red/A30 #FF1744`. 이 값들이 매핑되는 semantic 토큰명은 `get_variable_defs`로 특정되지 않아 `[Figma에서 확인 불가]`.
 
-Action-area Dark에서 쓰이는 dark 값(node는 [06-display-feedback.md → Figma References](06-display-feedback.md#figma-references) 참고): 메인 버튼 bg `#3B99F6`, Button-text·Interaction 색 `#CDD3D7`, Home-bar bg `bg-primary(dark) #191A1B`.
+Action-area Dark에서 쓰이는 dark 값(node는 [display-feedback.md → Figma References](display-feedback.md#figma-references) 참고): 메인 버튼 bg `#3B99F6`, Button-text·Interaction 색 `#CDD3D7`, Home-bar bg `bg-primary(dark) #191A1B`.
 
 ---
 
@@ -112,7 +112,7 @@ Shadow 3종 swatch는 Layout 프레임 안의 그룹에 있다.
 
 ## 명명 불일치
 
-Figma 원본에서 그대로 쓰이는 이름이다(임의 수정하지 않았다). 아래 항목은 이 파일 범위를 넘어 `04-actions-inputs.md` · `05-containers-overlays.md` · `06-display-feedback.md`에 걸쳐 있다.
+Figma 원본에서 그대로 쓰이는 이름이다(임의 수정하지 않았다). 아래 항목은 이 파일 범위를 넘어 `actions-inputs.md` · `containers-overlays.md` · `display-feedback.md`에 걸쳐 있다.
 
 - `Card-item-recipt-error` — "receipt"의 오타 "recipt" (같은 계열의 `Card-item-receipt-list`는 정상 철자) — 05
 - `Iimg-nav/24` — "Img-nav/24"의 오타 "Iimg" — 03

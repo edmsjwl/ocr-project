@@ -17,8 +17,8 @@
 
   경고 아이콘(Img-warning/48, Color=red)은 download_assets로 이 화면 인스턴스를 직접 export해서
   얻은 실제 path를 그대로 옮겨왔다 — 삼각형 채움 #FF5252, 테두리·느낌표는 label/primary/normal
-  (#222426)이다. 이 레드는 01-foundation.md의 status/rejected/normal(#F44336)과는 다른 값인데,
-  이번에 처음 실측된 값이라 02-icon.md의 "[Figma에서 확인 불가]" 표시를 갱신해야 한다(별도 처리).
+  (#222426)이다. 이 레드는 foundation.md의 status/rejected/normal(#F44336)과는 다른 값인데,
+  이번에 처음 실측된 값이라 icon.md의 "[Figma에서 확인 불가]" 표시를 갱신해야 한다(별도 처리).
 
   상태바 아이콘(Celluar/Wi-Fi/Battery)은 Figma 에셋 URL이 7일 후 만료되어 저장소에 직접 링크할 수
   없으므로, 기존 screen-*.html 파일들과 동일하게 인라인 SVG로 재현했다.
@@ -27,13 +27,13 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <style>
   :root {
-    /* ---- Color — 01-foundation.md → Color(Semantic Light) ---- */
+    /* ---- Color — foundation.md → Color(Semantic Light) ---- */
     --bg-secondary: #ffffff;
     --static-white: #ffffff;
     --label-primary-normal: #222426;   /* 아이콘 테두리·느낌표 */
     --label-secondary-normal: #434648; /* 제목, 버튼 텍스트 */
     --label-secondary-selected: #8c9499; /* 설명 */
-    /* line-normal 계열은 원색이 아니라 cool-neutral-70에 opacity를 얹은 값이다(01-foundation.md) */
+    /* line-normal 계열은 원색이 아니라 cool-neutral-70에 opacity를 얹은 값이다(foundation.md) */
     --line-normal-neutral: rgba(87, 94, 98, 0.16); /* cool-neutral-70 opacity 16% */
     /* Img-warning/48(Color=red) 삼각형 채움 — 이번에 Figma에서 처음 실측(기존 status-rejected 토큰과 다름) */
     --icon-warning-red: #ff5252;
@@ -62,7 +62,7 @@
     flex-direction: column;
   }
 
-  /* ---- Status-bar — background=Secondary, label=Black(03-layout.md → Status-bar) ---- */
+  /* ---- Status-bar — background=Secondary, label=Black(layout.md → Status-bar) ---- */
   .status-bar {
     height: 44px;
     flex-shrink: 0;
@@ -85,7 +85,7 @@
     padding: 160px 20px; /* Figma 그대로. 320px 패딩 + 본문으로 화면 하단에 여백이 남는 레이아웃이 맞다 */
   }
 
-  /* ---- Status-message-button — 03-layout.md → Status-message(button 변형) ----
+  /* ---- Status-message-button — layout.md → Status-message(button 변형) ----
      W343, padding Y80/X20, gap20(아이콘그룹↔버튼), 내부 title/desc 그룹 gap24 → gap6 */
   .status-message-button {
     width: 343px;
@@ -132,7 +132,7 @@
     text-align: center;
   }
 
-  /* ---- Button-solid(Assistive/Outlined/Medium) — 04-actions-inputs.md → Button-solid ----
+  /* ---- Button-solid(Assistive/Outlined/Medium) — actions-inputs.md → Button-solid ----
      H44, radius12, padding X20/Y10, border1 line/normal/neutral */
   .status-message-button .confirm-btn {
     height: 44px;

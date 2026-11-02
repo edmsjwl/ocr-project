@@ -42,7 +42,7 @@ Card-item-receipt-list, Card-item-recipt-error, Card-info, Uploader-file 4종.
 
 **Tokens**
 - bg `bg-secondary`(#FFFFFF)
-- 좌측 Category-badge Square(48×48, radius 16): 개인 bg `#EFF8FF`, 법인 bg `#F1F3F4`(→ [06-display-feedback.md → Category-badge](06-display-feedback.md#category-badge))
+- 좌측 Category-badge Square(48×48, radius 16): 개인 bg `#EFF8FF`, 법인 bg `#F1F3F4`(→ [display-feedback.md → Category-badge](display-feedback.md#category-badge))
 - 거래처명: `Body05/Medium` 15/22/-0.045px `label/secondary/normal`(#434648, 말줄임)
 - 금액: `Body05/Bold` 15/22 `label/primary/normal`(#222426), "128,000" + "원"(gap `Padding/2`)
 - 날짜·시간: `Body06/Medium` 14/20/-0.042px `label/secondary/weak`(#A2A9AE)
@@ -134,7 +134,7 @@ Figma 주석: "Image preview — 실제 영수증이 들어간 예시 화면입�
 
 ### Image-viewer-375*591
 
-이름은 591이지만 실제 크기는 W 375 × H 541([01-foundation.md → 명명 불일치](01-foundation.md#명명-불일치) 참고).
+이름은 591이지만 실제 크기는 W 375 × H 541([foundation.md → 명명 불일치](foundation.md#명명-불일치) 참고).
 
 **Size & Layout**
 W 375 × H 541. 내부에 Thumbnail-375*541을 꽉 채워 배치

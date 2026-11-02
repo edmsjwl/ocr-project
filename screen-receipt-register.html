@@ -1,0 +1,424 @@
+<!--
+  영수증 등록 (Receipt Register Form) 화면
+
+  사용자가 공유한 스크린샷(영수증 등록 폼 — 썸네일 스트립/이미지 미리보기/카드구분/프로그램/적요/
+  가맹점명/승인번호)을 기준으로 만들었다. Figma는 조회하지 않고, 이 저장소의 DESIGN.md·
+  docs/design-system/*.md·Skills.md("UI Design Skill")·기존 screen-*.html/assets/만 근거로
+  구성했다. 각 블록 출처는 "파일명 → 컴포넌트명" 주석으로 표시했다. 문서에 없어서 이번 화면에서만
+  임의로 정한 값은 "※미정의"로 표시했다.
+
+  [요청에 따른 핵심 변경 — 카드 구분 필드]
+  기존(스크린샷)에는 "카드 구분" 자리가 Dropdown-box처럼 세로로 큰 박스(H56)였는데, 이번 요청은
+  그 내용을 "개인/법인 + 카드사 + 뒤 4자리"로 바꾸면서 세로 공간은 늘리지 말고 한 행에 다 표시해
+  달라는 것이었다. Skills.md 기준으로 보면 이건 성격이 바뀐 것이다 — 더 이상 사용자가 선택하는
+  Control이 아니라, 업로드된 영수증/카드 데이터에서 읽어오는 Status성 참고 정보다. 그래서
+  Dropdown-box(Control, H56)를 그대로 쓰지 않고, 이미 이 문서에 있는 "컴팩트한 라벨+값 필드"
+  패턴인 Date-picker-selectbox(H48, radius12, 라벨+값 한 줄)의 치수만 재사용해서, 내용은
+  Category-badge(개인/법인) + 카드사 텍스트 + 마스킹된 뒤 4자리를 한 행에 넣었다.
+  (Date-picker-selectbox 자체의 캘린더 동작이나 의미를 가져온 게 아니라 "한 줄짜리 컴팩트 필드"
+  치수 레시피만 재사용했다는 뜻이다.)
+
+  사용한 컴포넌트 매핑:
+    - Header(닫기)            → layout.md → Header, type=Close
+      (Usage 메모에 Close 타입 실사용처가 "[영수증 등록]"으로 명시돼 있어 그대로 채택)
+    - 썸네일 스트립            → containers-overlays.md → Img-thumbnail(State=Default|Selected)
+    - 이미지 미리보기 + 돋보기  → containers-overlays.md → Image-viewer-343*140(Size=M)
+    - 카드 구분(컴팩트 1행)    → 치수만 actions-inputs.md → Date-picker-selectbox 재사용,
+                               내용은 display-feedback.md → Category-badge(Round)
+    - 프로그램 *               → actions-inputs.md → Dropdown-box(Close 상태, 값 있음)
+    - 적요 *                  → actions-inputs.md → Text-area(Edited 상태)
+    - 가맹점 명 * / 승인 번호 * → actions-inputs.md → Textfield(입력값 + clear 버튼)
+    - 하단 "등록하기" CTA      → display-feedback.md → Action-Area(Color=White, One-button, Normal)
+      (스크린샷은 스크롤 중간까지만 보여줘서 하단 CTA가 안 보이지만, 제출 없이는 폼이 기능하지
+      않으므로 넣었다 — 이 버튼의 존재 자체는 ※미정의/판단 추가다)
+    - "업로드한 영수증을 모두 확인해 주세요" + "1/5" 카운터 → 전용 컴포넌트가 문서에 없어
+      ※미정의로 기존 타이포 토큰(Body05/Semibold, Body06/Medium)만 재사용해 구성
+
+  영수증 썸네일/미리보기 이미지는 실제 사진 데이터가 없어 회색 placeholder로 대체했다.
+-->
+<title>영수증 등록</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root {
+    /* ---- Color — foundation.md → Color(Semantic Light) ---- */
+    --bg-primary: #f7f8f9;
+    --bg-secondary: #ffffff;
+    --bg-inverse: #434648;
+    --label-primary-normal: #222426;
+    --label-secondary-normal: #434648;
+    --label-secondary-selected: #8c9499;
+    --label-secondary-weak: #a2a9ae;
+    --label-primary-weak: #babec2;
+    --label-inverse: #ffffff;
+    --foreground-brand-normal: #2a7fec;
+    --clear-blue-5: #eff8ff;
+    --cool-neutral-10: #f1f3f4;
+    --status-rejected-normal: #f44336;
+    --line-normal-normal: rgba(87, 94, 98, 0.24);
+    --line-normal-neutral: rgba(87, 94, 98, 0.16);
+    --line-brand-normal: #2a7fec;
+  }
+
+  * { box-sizing: border-box; }
+
+  /* 네이티브 폼 컨트롤(button/input/textarea) 리셋 — 브라우저 기본 padding/border/height가
+     커스텀 값 위에 겹쳐 보이는 문제 방지(Safari에서 특히 두드러짐) */
+  button, input, textarea {
+    font-family: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    min-height: 0;
+  }
+
+  body {
+    margin: 0;
+    padding: 40px 16px;
+    background: #e3e6e8;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+  }
+
+  .frame {
+    position: relative;
+    width: 375px; /* CLAUDE.md "iOS 375px 프레임 기준" */
+    height: 812px;
+    background: var(--bg-primary);
+    overflow: hidden;
+    border-radius: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---- Status-bar — layout.md → Status-bar, background=Primary ---- */
+  .status-bar {
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+  }
+  .status-bar .time { font: 600 15px/1 'Pretendard'; color: var(--label-primary-normal); letter-spacing: -0.237px; }
+  .status-bar .icons { display: flex; align-items: center; gap: 6px; }
+
+  /* ---- Header — layout.md → Header, type=Close, background=Primary ----
+     W375×H56, padding X20/Y16. 우측 Icon/close/24, gap8, 중앙 제목 Body03/Semibold -0.054px */
+  .header {
+    height: 56px;
+    flex-shrink: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 16px 20px;
+  }
+  .header .header-title {
+    position: absolute;
+    left: 0; right: 0;
+    text-align: center;
+    font: 600 18px/26px 'Pretendard';
+    letter-spacing: -0.054px;
+    color: var(--label-primary-normal);
+    pointer-events: none;
+  }
+  .header .close-btn { border: none; background: none; padding: 0; cursor: pointer; display: flex; position: relative; z-index: 1; }
+  .header .close-btn img { width: 24px; height: 24px; display: block; }
+
+  .body { flex: 1; overflow-y: auto; padding: 4px 20px 24px; display: flex; flex-direction: column; gap: 24px; } /* ※미정의 섹션 간 gap */
+  /* .body의 직계 자식은 전부 찌그러들지 않게 고정 — overflow:hidden이 걸린 .preview-viewer처럼
+     flexbox가 "찌그러들어도 되는 요소"로 오인해 0에 가깝게 누르는 걸 방지(버그 수정) */
+  .body > * { flex-shrink: 0; }
+
+  /* ---- 썸네일 확인 섹션 — 전용 컴포넌트 없음(※미정의), 타이포만 기존 토큰 ---- */
+  .confirm-heading { display: flex; align-items: baseline; justify-content: space-between; }
+  .confirm-heading .title {
+    /* Body05/Semibold 15/22/-0.3%(실제 -0.045px) */
+    font-size: 15px; line-height: 22px; letter-spacing: -0.045px; font-weight: 600;
+    color: var(--label-primary-normal);
+  }
+  .confirm-heading .counter {
+    /* Body06/Medium 14/20/-0.3%(실제 -0.042px) */
+    font-size: 14px; line-height: 20px; letter-spacing: -0.042px; font-weight: 500;
+    color: var(--label-secondary-weak);
+  }
+
+  /* ---- Img-thumbnail — containers-overlays.md → Img-thumbnail(State=Default|Selected) ----
+     76×76, radius12. Default border1px line/normal/normal + overlay rgba(0,0,0,0.08).
+     Selected border2px line/brand/normal + overlay rgba(42,127,236,0.14) */
+  .thumbnail-strip { display: flex; gap: 8px; overflow-x: auto; } /* ※미정의 gap */
+  .thumbnail-strip .thumb {
+    flex-shrink: 0;
+    width: 76px; height: 76px;
+    border-radius: 12px;
+    position: relative;
+    background: repeating-linear-gradient(135deg, #e8eaec 0 8px, #eef0f1 8px 16px);
+    border: 1px solid var(--line-normal-normal);
+  }
+  .thumbnail-strip .thumb::after {
+    content: ''; position: absolute; inset: 0; border-radius: 11px; background: rgba(0,0,0,0.08);
+  }
+  .thumbnail-strip .thumb.selected { border: 2px solid var(--line-brand-normal); }
+  .thumbnail-strip .thumb.selected::after { background: rgba(42,127,236,0.14); }
+
+  /* ---- Image-viewer-343*140(M) — containers-overlays.md ----
+     W343×H140, radius20, border1px line/normal/normal. 우측중앙 확대버튼 52×52(radius64, padding10, 아이콘24) */
+  .preview-viewer {
+    position: relative;
+    width: 100%;
+    height: 140px;
+    border-radius: 20px;
+    border: 1px solid var(--line-normal-normal);
+    overflow: hidden;
+  }
+  .preview-viewer .placeholder-img {
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(135deg, #e8eaec 0 10px, #eef0f1 10px 20px);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: var(--label-secondary-weak);
+  }
+  .preview-viewer .zoom-btn {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    width: 52px; height: 52px; border-radius: 64px; padding: 10px;
+    background: var(--bg-secondary); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 5px rgba(134, 134, 134, 0.2); /* ※미정의: 사진 위에서 버튼이 보이도록 추가 */
+  }
+  .preview-viewer .zoom-btn img { width: 24px; height: 24px; display: block; }
+
+  /* ---- 폼 필드 공통 ---- */
+  .field { display: flex; flex-direction: column; gap: 8px; } /* actions-inputs.md Textfield 세로 gap8 */
+  .field .field-heading {
+    padding: 0 4px;
+    /* Body05/Bold 15/22/-0.3%(실제 -0.045px) */
+    font-size: 15px; line-height: 22px; letter-spacing: -0.045px; font-weight: 700;
+    color: var(--label-secondary-normal);
+  }
+  .field .required { color: var(--status-rejected-normal); margin-left: 2px; }
+
+  /* ---- 카드 구분(컴팩트 1행) — 치수는 Date-picker-selectbox(H48/radius12) 재사용,
+     내용은 Category-badge + 카드사 + 뒤4자리. 세로 공간을 늘리지 않기 위해 라벨도 같은 행에 둔다 ---- */
+  .card-info-field {
+    height: 48px;
+    padding: 0 12px;
+    border-radius: 12px;
+    border: 1px solid var(--line-normal-neutral);
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .card-info-field .field-heading { padding: 0; flex-shrink: 0; }
+  .card-info-field .card-info-value { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .card-info-field .category-badge {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 999px;
+    /* Caption01/Semibold 13/19/-0.2%(실제 -0.026px) */
+    font-size: 13px; line-height: 19px; letter-spacing: -0.026px; font-weight: 600;
+  }
+  .card-info-field .category-badge.personal { background: var(--clear-blue-5); color: var(--label-primary-normal); }
+  .card-info-field .category-badge.corporate { background: var(--cool-neutral-10); color: var(--label-secondary-normal); }
+  .card-info-field .card-text {
+    /* Body05/Medium 15/22/-0.3%(실제 -0.045px) */
+    font-size: 15px; line-height: 22px; letter-spacing: -0.045px; font-weight: 500;
+    color: var(--label-primary-normal);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* ---- Dropdown-box(Close, 값 있음) — actions-inputs.md → Dropdown-box ---- */
+  .dropdown-box {
+    height: 56px;
+    border-radius: 16px;
+    padding: 12px;
+    border: 1px solid var(--line-normal-normal);
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+  .dropdown-box .value {
+    /* Body04/Medium 16/24/-0.3%(실제 -0.048px) */
+    font-size: 16px; line-height: 24px; letter-spacing: -0.048px; font-weight: 500;
+    color: var(--label-primary-normal);
+  }
+  .dropdown-box img { width: 20px; height: 20px; display: block; }
+
+  /* ---- Text-area(Edited) — actions-inputs.md → Text-area ---- */
+  .textarea-box {
+    border-radius: 16px;
+    padding: 12px;
+    border: 1px solid var(--line-normal-normal);
+    background: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .textarea-box textarea {
+    border: none; outline: none; resize: none; background: none;
+    font-family: 'Pretendard';
+    /* Body04/Medium 16/24/-0.3%(실제 -0.048px) */
+    font-size: 16px; line-height: 24px; letter-spacing: -0.048px; font-weight: 500;
+    color: var(--label-primary-normal);
+    height: 60px;
+  }
+  .textarea-box .byte-count {
+    align-self: flex-end;
+    /* Body06/Medium 14/20/-0.3%(실제 -0.042px) */
+    font-size: 14px; line-height: 20px; letter-spacing: -0.042px; font-weight: 500;
+    color: var(--label-primary-weak);
+  }
+
+  /* ---- Textfield(입력값 + clear) — actions-inputs.md → Textfield ---- */
+  .textfield-box {
+    height: 56px;
+    border-radius: 16px;
+    padding: 12px;
+    border: 1px solid var(--line-brand-normal); /* 스크린샷 기준 입력 중/포커스 톤 */
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .textfield-box input {
+    flex: 1; min-width: 0;
+    border: none; outline: none; background: none;
+    font-family: 'Pretendard';
+    /* Body04/Medium 16/24/-0.3%(실제 -0.048px) */
+    font-size: 16px; line-height: 24px; letter-spacing: -0.048px; font-weight: 500;
+    color: var(--label-primary-normal);
+  }
+  .textfield-box .clear-btn { border: none; background: none; padding: 0; cursor: pointer; display: flex; flex-shrink: 0; }
+  .textfield-box .clear-btn img { width: 20px; height: 20px; display: block; }
+
+  /* ---- Action-Area — display-feedback.md → Action-Area(Color=White, One-button, Normal) ---- */
+  .action-area {
+    flex-shrink: 0;
+    background: linear-gradient(180deg, rgba(247,248,249,0) 0.91%, rgba(247,248,249,0.53) 24.99%, var(--bg-primary) 50%);
+  }
+  .action-area .contents { padding: 10px 20px 20px; }
+  .action-area button {
+    width: 100%;
+    height: 52px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    background: var(--foreground-brand-normal);
+    color: var(--label-inverse);
+    /* Body04/Semibold 16/24/-0.3%(실제 -0.048px) */
+    font-size: 16px; line-height: 24px; letter-spacing: -0.048px; font-weight: 600;
+  }
+  .home-bar { display: flex; justify-content: center; padding: 16px 10px 6px; background: var(--bg-primary); }
+  .home-bar .slider { width: 134px; height: 5px; border-radius: 4px; background: var(--bg-inverse); }
+</style>
+
+<div class="frame">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <span class="icons">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="#222426"/><rect x="5" y="5" width="3" height="7" rx="0.5" fill="#222426"/><rect x="10" y="3" width="3" height="9" rx="0.5" fill="#222426"/><rect x="15" y="0" width="3" height="12" rx="0.5" fill="#222426"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 10.2C8.66 10.2 9.2 9.66 9.2 9C9.2 8.34 8.66 7.8 8 7.8C7.34 7.8 6.8 8.34 6.8 9C6.8 9.66 7.34 10.2 8 10.2Z" fill="#222426"/><path d="M4.6 6.6C5.5 5.7 6.7 5.2 8 5.2C9.3 5.2 10.5 5.7 11.4 6.6" stroke="#222426" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M1.8 3.8C3.5 2.1 5.7 1.2 8 1.2C10.3 1.2 12.5 2.1 14.2 3.8" stroke="#222426" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="2.5" stroke="#222426"/><rect x="2" y="2" width="18" height="8" rx="1.5" fill="#222426"/><rect x="22.5" y="4" width="1.5" height="4" rx="0.7" fill="#222426"/></svg>
+    </span>
+  </div>
+
+  <div class="header">
+    <span class="header-title">영수증 등록</span>
+    <button class="close-btn" aria-label="닫기" onclick="location.href='screen-home.html'">
+      <img src="assets/icon-close-24.svg" alt="">
+    </button>
+  </div>
+
+  <div class="body">
+    <div>
+      <div class="confirm-heading">
+        <span class="title">업로드한 영수증을 모두 확인해 주세요</span>
+        <span class="counter">1/5</span>
+      </div>
+      <div class="thumbnail-strip" style="margin-top:12px;">
+        <div class="thumb selected"></div>
+        <div class="thumb"></div>
+        <div class="thumb"></div>
+        <div class="thumb"></div>
+        <div class="thumb"></div>
+      </div>
+    </div>
+
+    <div class="preview-viewer">
+      <div class="placeholder-img">영수증 이미지</div>
+      <button class="zoom-btn" type="button" aria-label="확대 보기" onclick="console.log('이미지 확대 — 이번 화면 범위 밖')">
+        <img src="assets/icon-search-24.svg" alt="">
+      </button>
+    </div>
+
+    <!-- 카드 구분(컴팩트 1행) — 개인/법인 + 카드사 + 뒤 4자리를 한 줄에 -->
+    <div class="card-info-field">
+      <span class="field-heading">카드 구분</span>
+      <span class="card-info-value">
+        <span class="category-badge personal" id="cardTypeBadge">개인</span>
+        <span class="card-text" id="cardCompanyText">신한카드 · •••• 1234</span>
+      </span>
+    </div>
+
+    <div class="field">
+      <label class="field-heading">프로그램<span class="required">*</span></label>
+      <button class="dropdown-box" type="button" onclick="console.log('프로그램 선택 — Dropdown-list 상호작용은 이번 화면 범위 밖')">
+        <span class="value">그것이 알고 싶다</span>
+        <img src="assets/icon-chevron-down-20.svg" alt="">
+      </button>
+    </div>
+
+    <div class="field">
+      <label class="field-heading" for="memoInput">적요<span class="required">*</span></label>
+      <div class="textarea-box">
+        <textarea id="memoInput" maxlength="100" oninput="updateByteCount()">제작 회의 참석자 음료 구매</textarea>
+        <span class="byte-count" id="byteCount">27 / 100 Byte</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-heading" for="merchantInput">가맹점 명<span class="required">*</span></label>
+      <div class="textfield-box">
+        <input id="merchantInput" type="text" value="스타벅스">
+        <button class="clear-btn" type="button" aria-label="지우기" onclick="document.getElementById('merchantInput').value=''">
+          <img src="assets/icon-close-circle-solid-20.svg" alt="">
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-heading" for="approvalInput">승인 번호<span class="required">*</span></label>
+      <div class="textfield-box">
+        <input id="approvalInput" type="text" inputmode="numeric" value="12345678">
+        <button class="clear-btn" type="button" aria-label="지우기" onclick="document.getElementById('approvalInput').value=''">
+          <img src="assets/icon-close-circle-solid-20.svg" alt="">
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-area">
+    <div class="contents">
+      <button type="button" onclick="console.log('등록하기 — 제출 후 이동 플로우는 이번 화면 범위 밖')">등록하기</button>
+    </div>
+    <div class="home-bar"><div class="slider"></div></div>
+  </div>
+</div>
+
+<script>
+  function updateByteCount() {
+    const len = new TextEncoder().encode(document.getElementById('memoInput').value).length;
+    document.getElementById('byteCount').textContent = `${len} / 100 Byte`;
+  }
+  updateByteCount();
+</script>

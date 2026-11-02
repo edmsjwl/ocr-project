@@ -208,7 +208,7 @@ Figma 주석: "인증화면에 사용됩니다."
 - Navigation-item bg: Home-Selected `foreground/normal/normal` (#F7F8F9), Receipt-Default `foreground/normal/selected` (#EBEEF0)
 - 아이콘: `Iimg-nav/24`(24px, Type=home|list, Status=activated|disabled)
 - 라벨: `Caption01/Bold` 13/19/-0.2%(실제 -0.026px) — 홈 "홈"(`label/primary/normal` #222426), 영수증 탭 "영수증 내역"(선택 안 됨 `label/secondary/weak` #A2A9AE)
-- Navigation-menu bg `foreground/normal/selected` (#EBEEF0), Shadow `Shadow-Nav`([01-foundation.md](01-foundation.md#elevation))
+- Navigation-menu bg `foreground/normal/selected` (#EBEEF0), Shadow `Shadow-Nav`([foundation.md](foundation.md#elevation))
 
 ---
 
@@ -247,7 +247,7 @@ Figma 주석: "영수증 내역 페이지 타이틀에 사용됩니다."
 - 설명(text·icon 공통): `Body05/Medium` 15/22/-0.045px, `label/primary/disabled` (#8C9499) — 예시 "보조 메시지가 들어갑니다"
 - Status-message-button 제목: `Body02/Semibold` 20/28/-0.4%(실제 -0.08px), `label/secondary/normal` (#434648) — "인터넷 연결을 확인해주세요"
 - Status-message-button 설명: `Body04/Medium` 16/24/-0.048px, `label/secondary/selected` (#8C9499), 2줄
-- Status-message-button 버튼: Button-solid `Color=Assistive, Variant=Outlined, Size=Medium`(H 44, padding X 20 / Y 10, radius 12, border 1px `line/normal/neutral`) — 라벨 "재시도" `Body05/Semibold` 15/22 `label/secondary/normal`, 아이콘 없음. 상세 스펙은 [04-actions-inputs.md → Button-solid](04-actions-inputs.md#button-solid)
+- Status-message-button 버튼: Button-solid `Color=Assistive, Variant=Outlined, Size=Medium`(H 44, padding X 20 / Y 10, radius 12, border 1px `line/normal/neutral`) — 라벨 "재시도" `Body05/Semibold` 15/22 `label/secondary/normal`, 아이콘 없음. 상세 스펙은 [actions-inputs.md → Button-solid](actions-inputs.md#button-solid)
 
 ---
 

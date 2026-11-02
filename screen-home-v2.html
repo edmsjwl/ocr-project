@@ -7,11 +7,11 @@
   임의로 정한 값은 "※미정의"로 표시했다.
 
   사용한 컴포넌트 매핑:
-    - 상단 로고           → 03-layout.md → Header, type=Home (LogoWise 64×22 + Logo 42×25, gap2)
-    - 앨범/파일 선택 카드  → 04-actions-inputs.md → Button-action-card
-    - 최근 제출 내역 리스트 → 05-containers-overlays.md → Card-item-receipt-list
-    - 하단 GNB(홈/영수증내역) → 03-layout.md → Navigation(Navigation-item/-menu/-bottom)
-      그림자는 01-foundation.md → Elevation의 `Shadow-Nav`(5레이어) 값을 그대로 옮겼다
+    - 상단 로고           → layout.md → Header, type=Home (LogoWise 64×22 + Logo 42×25, gap2)
+    - 앨범/파일 선택 카드  → actions-inputs.md → Button-action-card
+    - 최근 제출 내역 리스트 → containers-overlays.md → Card-item-receipt-list
+    - 하단 GNB(홈/영수증내역) → layout.md → Navigation(Navigation-item/-menu/-bottom)
+      그림자는 foundation.md → Elevation의 `Shadow-Nav`(5레이어) 값을 그대로 옮겼다
       (4번째 레이어는 alpha 0이라 시각적으로 보이지 않아 생략했다)
 
   "최근 제출 내역" 섹션 컨테이너 자체(흰 카드, radius20)는 문서에 전용 컴포넌트가 없어 ※미정의로
@@ -23,7 +23,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <style>
   :root {
-    /* ---- Color — 01-foundation.md → Color(Semantic Light) ---- */
+    /* ---- Color — foundation.md → Color(Semantic Light) ---- */
     --bg-alternative: #f1f3f4;   /* cool-neutral-10 */
     --bg-secondary: #ffffff;     /* common-0 */
     --bg-inverse: #434648;       /* cool-neutral-80 */
@@ -64,7 +64,7 @@
     flex-direction: column;
   }
 
-  /* ---- Status-bar — 03-layout.md → Status-bar, background=Alternative ---- */
+  /* ---- Status-bar — layout.md → Status-bar, background=Alternative ---- */
   .status-bar {
     height: 44px;
     flex-shrink: 0;
@@ -77,7 +77,7 @@
   .status-bar .time { font: 600 15px/1 'Pretendard'; color: var(--label-primary-normal); letter-spacing: -0.237px; }
   .status-bar .icons { display: flex; align-items: center; gap: 6px; }
 
-  /* ---- Header — 03-layout.md → Header, type=Home, background=Alternative, H56 ---- */
+  /* ---- Header — layout.md → Header, type=Home, background=Alternative, H56 ---- */
   .header {
     height: 56px;
     flex-shrink: 0;
@@ -100,7 +100,7 @@
     gap: 16px;
   }
 
-  /* ---- Button-action-card — 04-actions-inputs.md → Button-action-card ----
+  /* ---- Button-action-card — actions-inputs.md → Button-action-card ----
      W161×H110, radius16, padding top14/X16/bottom8, shadow 0 0 1.5px rgba(134,134,134,0.04) */
   .action-cards { display: flex; gap: 12px; }
   .action-card {
@@ -167,7 +167,7 @@
 
   .list { display: flex; flex-direction: column; gap: 28px; }
 
-  /* ---- Card-item-receipt-list — 05-containers-overlays.md → Card-item-receipt-list ----
+  /* ---- Card-item-receipt-list — containers-overlays.md → Card-item-receipt-list ----
      W375×H49, padding X20, 바깥 gap8, 배지-텍스트 gap12. 상태 배지 padding X6/Y3 radius8 */
   .card-row {
     display: flex;
@@ -189,7 +189,7 @@
     gap: 4px;
     padding: 3px 8px;
   }
-  .card-badge.personal { background: var(--clear-blue-5); }   /* Category-badge personal bg — 06-display-feedback.md */
+  .card-badge.personal { background: var(--clear-blue-5); }   /* Category-badge personal bg — display-feedback.md */
   .card-badge.corporate { background: var(--cool-neutral-10); } /* Category-badge corporate bg */
   .card-badge img { width: 24px; height: 24px; display: block; }
   .card-badge span {
@@ -239,7 +239,7 @@
   .status-chip.completed { background: var(--status-completed-subtle); color: var(--status-completed-normal); }
   .status-chip.rejected { background: var(--status-rejected-subtle); color: var(--status-rejected-normal); }
 
-  /* ---- 하단 Navigation — 03-layout.md → Navigation(Navigation-item/-menu/-bottom) ---- */
+  /* ---- 하단 Navigation — layout.md → Navigation(Navigation-item/-menu/-bottom) ---- */
   .nav-area { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
   .nav-bar {
     background: var(--nav-pill-bg);
@@ -248,7 +248,7 @@
     padding: 6px;
     display: flex;
     align-items: center;
-    /* Shadow-Nav — 01-foundation.md → Elevation(5레이어, 4번째는 alpha0이라 생략) */
+    /* Shadow-Nav — foundation.md → Elevation(5레이어, 4번째는 alpha0이라 생략) */
     box-shadow:
       1px 3px 3px rgba(69, 81, 90, 0.09),
       3px 7px 5px rgba(69, 81, 90, 0.05),
