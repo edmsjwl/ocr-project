@@ -39,6 +39,7 @@ Figma MCP의 `download_assets` 도구로 실제 Figma 파일에서 직접 export
 | icon-alert-circle-16.svg | 192:6766 | §12.3 Card-Warning |
 | icon-calendar-16.svg | 1774:49893 | 참고용 |
 | icon-functional-check.svg | 336:14252 | §8.1 Check-box/24(체크됨) |
+| icon-warning-circle-16.svg | 3067:62468 (Mode=Light) | 신규 확인(2026-11) — 빨간 원 + 흰 느낌표. `Img-warning-circle/16`, dark 변형(3067:62470, 채움 `#E53935`)은 미사용으로 export 안 함 |
 
 ## 카드 종류 아이콘 (24px)
 

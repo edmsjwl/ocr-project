@@ -9,7 +9,7 @@ UI 아이콘 사이즈: 16 / 20 / 24 / 28 / 32px(`Icon/Frame` 스와치 기준).
 
 ## 글리프 목록
 
-- 16px: `chevron-down` `chevron-left` `chevron-right` `chevron-up` `chevron-down-solid` `chevron-up-solid` `info` `info-solid` `help-circle` `alert-circle` `alert-circle-solid` `Calendar`
+- 16px: `chevron-down` `chevron-left` `chevron-right` `chevron-up` `chevron-down-solid` `chevron-up-solid` `info` `info-solid` `help-circle` `alert-circle` `alert-circle-solid` `Calendar` `Img-warning-circle/16`(Mode=light|dark, 신규 추가 확인 — 빨간 원 + 흰 느낌표. light 채움 `status/rejected/normal`(#F44336), dark 채움 `status/rejected/strong`(#E53935))
 - 20px: `check` `chevron-down` `chevron-left` `chevron-right` `chevron-up` `chevron-left-solid` `chevron-right-solid` `info` `close-circle` `close-circle/solid` `close` `help-circle` `alert-circle` `alert-circle/solid` `check-circle` `check-circle/solid` `Calendar` `search` `clock` `file-upload/solid` `file-upload`(이름은 24이지만 20px 크기로 배치됨)
 - 24px: `home` `home/solid` `text/solid` `chevron-down` `chevron-left` `chevron-right` `chevron-up` `search` `info` `circle` `help-circle` `alert-circle` `close` `plus-circle2` `plus` `Calendar` `check-circle` `check-circle/solid` `file-upload` `file` `Img/alert-circle`
 - 28px: `close-circle/solid` `check-circle/solid`
@@ -33,5 +33,7 @@ UI 아이콘 사이즈: 16 / 20 / 24 / 28 / 32px(`Icon/Frame` 스와치 기준).
 | UI 20px 그룹 | 1454:40189 |
 | UI 24px 그룹 | 91:3001 |
 | UI 28px 그룹 | 1517:62331 |
-| Img-card/24 | 2312:84275 |
-| Iimg-nav/24 | 2254:73924 |
+| Img-card/24(아이콘 라이브러리 스와치, 재확인 시 3067:62414로 ID 변경 확인 — 값 동일) | 3067:62414 |
+| Iimg-nav/24(재확인 시 3067:62381로 ID 변경 확인 — 값 동일) | 3067:62381 |
+| Img-warning-circle/16(신규) — Mode=Light | 3067:62468 |
+| Img-warning-circle/16(신규) — Mode=Dark | 3067:62470 |

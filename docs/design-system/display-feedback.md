@@ -55,7 +55,7 @@ subtle 계열 bg는 [foundation.md → Color](foundation.md#color)의 opacity �
 카드 종류(개인/법인) 배지.
 
 **Properties**
-`Style` = Round | Square, `Type` = Round(`personal-card`\|`corporate-card`) / Square(`personal`\|`corporate`), `Mode` = Round(`Light`\|`Dark`) / Square(`light`\|`dark`)
+`Style` = Round | Square, `Type` = Round(`personal-card`\|`corporate-card`) / Square(`personal`\|`corporate`), `Mode` = Round(`Light`\|`Dark`) / Square(`light`\|`dark`), `Status` = Default | Selected(2026-11 재확인 시 신규 추가 확인 — 기존엔 문서화돼 있지 않았음)
 
 **Size & Layout**
 - Round: gap `Padding/4`(4px), padding X 8 / Y 3, radius 999(pill)
@@ -63,13 +63,30 @@ subtle 계열 bg는 [foundation.md → Color](foundation.md#color)의 opacity �
 
 **Tokens**
 
-| Type | bg(Light) | bg(Dark) |
-|---|---|---|
-| Personal | `clear-blue/5`(#EFF8FF) | rgba(30,82,175,0.16) |
-| Corporate | `cool-neutral/10`(#F1F3F4) | rgba(241,243,244,0.04) |
+⚠️ 2026-11 재확인 결과 Dark 배경값이 기존 문서(Personal rgba(30,82,175,0.16), Corporate rgba(241,243,244,0.04))와 달랐다 — 아래는 라이브로 다시 확인한 값이다.
+
+Round:
+
+| Type | Mode | Default | Selected |
+|---|---|---|---|
+| Personal | Light | `clear-blue/5`(#EFF8FF) | `clear-blue/10`(#DBEEFE) |
+| Personal | Dark | rgba(42,127,236,0.16) | rgba(42,127,236,0.4) |
+| Corporate | Light | `cool-neutral/10`(#F1F3F4) | Default와 동일(시각적 구분 없음) |
+| Corporate | Dark | rgba(241,243,244,0.08) | rgba(241,243,244,0.32) |
+
+Square:
+
+| Type | Mode | Default | Selected |
+|---|---|---|---|
+| Personal | Light | `clear-blue/5`(#EFF8FF) | `clear-blue/10`(#DBEEFE) |
+| Personal | Dark | rgba(42,127,236,0.16) | rgba(42,127,236,0.4) |
+| Corporate | Light | `cool-neutral/10`(#F1F3F4) | `cool-neutral/15`(#EBEEF0) |
+| Corporate | Dark | rgba(241,243,244,0.08) | rgba(241,243,244,0.32) |
+
+Round과 달리 Square는 Corporate/Light에서도 Default·Selected가 시각적으로 구분된다(Round/Corporate/Light만 예외).
 
 - Round 텍스트 `Caption01/Semibold` 13/19/-0.026px: Personal-Light `label/primary/normal`(#222426) / Personal-Dark #F7F8F9 / Corporate-Light `label/secondary/normal`(#434648) / Corporate-Dark #CDD3D7
-- Square 라벨("개인"/"법인"): `Caption02/Semibold` 12/18/-0.2%(실제 -0.024px) `label/primary/normal`(#222426, Personal-light 조회)
+- Square 라벨("개인"/"법인"): `Caption02/Semibold` 12/18/-0.2%(실제 -0.024px) — Personal-Light `label/primary/normal`(#222426) / Personal-Dark #F7F8F9 / Corporate-Light `label/secondary/normal`(#434648) / Corporate-Dark #CDD3D7 (2026-11 재확인으로 Dark·Corporate 값도 확정, 이전엔 Personal-light만 확인된 상태였음)
 - 카드 아이콘 24px(이미지 에셋)
 
 ---
@@ -150,7 +167,23 @@ Figma dev 주석: "변경 전: Two Button / 변경 후: One Button + Text Button
 |---|---|
 | Badge(섹션 전체) | 324:9408 |
 | Content-badge | 324:9396 |
-| Category-badge | 375:8105 |
+| Category-badge(섹션 전체) | 375:8105 |
+| Category-badge — Round/personal-card/Light/Default | 375:7985 |
+| Category-badge — Round/personal-card/Light/Selected(신규) | 3433:67880 |
+| Category-badge — Round/personal-card/Dark/Default | 1540:30581 |
+| Category-badge — Round/personal-card/Dark/Selected(신규) | 3433:67954 |
+| Category-badge — Round/corporate-card/Light/Default | 375:7984 |
+| Category-badge — Round/corporate-card/Light/Selected(신규, Default와 시각적 동일) | 3433:67931 |
+| Category-badge — Round/corporate-card/Dark/Default | 1540:30584 |
+| Category-badge — Round/corporate-card/Dark/Selected(신규) | 3433:68005 |
+| Category-badge — Square/personal/Light/Default | 1959:44234 |
+| Category-badge — Square/personal/Light/Selected(신규) | 3433:68064 |
+| Category-badge — Square/personal/Dark/Default | 1959:44186 |
+| Category-badge — Square/personal/Dark/Selected(신규) | 3433:68068 |
+| Category-badge — Square/corporate/Light/Default | 1959:44235 |
+| Category-badge — Square/corporate/Light/Selected(신규) | 3433:68107 |
+| Category-badge — Square/corporate/Dark/Default | 1959:44185 |
+| Category-badge — Square/corporate/Dark/Selected(신규) | 3433:68135 |
 | Progress(섹션 전체) | 2112:92010 |
 | Progress-bar | 427:17502 |
 | Action-Area(섹션 전체) / Action-area | 196:7993 |
