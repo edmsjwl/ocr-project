@@ -10,12 +10,12 @@ SBS OCR 서비스의 디자인 시스템 구현 명세다. 개발자와 Claude C
 
 | 문서 | 내용 |
 |---|---|
-| [01. Foundation](docs/design-system/foundation.md) | Typography, Color(Atomic / Semantic Light / Semantic Dark), Elevation |
-| [02. Icon](docs/design-system/icon.md) | Icon |
-| [03. Layout](docs/design-system/layout.md) | Layout (Status-bar, Home-bar, Header, Tab, Navigation 등) |
-| [04. Actions & Inputs](docs/design-system/actions-inputs.md) | Button, Textfield, Check-box, Date-picker |
-| [05. Containers & Overlays](docs/design-system/containers-overlays.md) | Bottom-sheet, Card, Image-input, Modal |
-| [06. Display & Feedback](docs/design-system/display-feedback.md) | Badge, Progress, Action-Area |
+| [Foundation](docs/design-system/foundation.md) | Typography, Color(Atomic / Semantic Light / Semantic Dark), Elevation |
+| [Icon](docs/design-system/icon.md) | Icon |
+| [Layout](docs/design-system/layout.md) | Layout (Status-bar, Home-bar, Header, Tab, Navigation 등) |
+| [Actions & Inputs](docs/design-system/actions-inputs.md) | Button, Textfield, Check-box, Date-picker |
+| [Containers & Overlays](docs/design-system/containers-overlays.md) | Bottom-sheet, Card, Image-input, Modal |
+| [Display & Feedback](docs/design-system/display-feedback.md) | Badge, Progress, Action-Area |
 
 ## Source of Truth
 
