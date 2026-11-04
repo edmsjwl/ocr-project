@@ -3,7 +3,7 @@
 
   사용자가 공유한 스크린샷(영수증 등록 폼 — 썸네일 스트립/이미지 미리보기/카드구분/프로그램/적요/
   가맹점명/승인번호)을 기준으로 만들었다. Figma는 조회하지 않고, 이 저장소의 DESIGN.md·
-  docs/design-system/*.md·Skills.md("UI Design Skill")·기존 screen-*.html/assets/만 근거로
+  docs/design-system/*.md·Skills.md("UI Design Skill")·기존 screen-*.html/../assets/만 근거로
   구성했다. 각 블록 출처는 "파일명 → 컴포넌트명" 주석으로 표시했다. 문서에 없어서 이번 화면에서만
   임의로 정한 값은 "※미정의"로 표시했다.
 
@@ -335,7 +335,7 @@
   <div class="header">
     <span class="header-title">영수증 등록</span>
     <button class="close-btn" aria-label="닫기" onclick="location.href='screen-home.html'">
-      <img src="assets/icon-close-24.svg" alt="">
+      <img src="../assets/icon-close-24.svg" alt="">
     </button>
   </div>
 
@@ -357,7 +357,7 @@
     <div class="preview-viewer">
       <div class="placeholder-img">영수증 이미지</div>
       <button class="zoom-btn" type="button" aria-label="확대 보기" onclick="console.log('이미지 확대 — 이번 화면 범위 밖')">
-        <img src="assets/icon-search-24.svg" alt="">
+        <img src="../assets/icon-search-24.svg" alt="">
       </button>
     </div>
 
@@ -374,7 +374,7 @@
       <label class="field-heading">프로그램<span class="required">*</span></label>
       <button class="dropdown-box" type="button" onclick="console.log('프로그램 선택 — Dropdown-list 상호작용은 이번 화면 범위 밖')">
         <span class="value">그것이 알고 싶다</span>
-        <img src="assets/icon-chevron-down-20.svg" alt="">
+        <img src="../assets/icon-chevron-down-20.svg" alt="">
       </button>
     </div>
 
@@ -391,7 +391,7 @@
       <div class="textfield-box">
         <input id="merchantInput" type="text" value="스타벅스">
         <button class="clear-btn" type="button" aria-label="지우기" onclick="document.getElementById('merchantInput').value=''">
-          <img src="assets/icon-close-circle-solid-20.svg" alt="">
+          <img src="../assets/icon-close-circle-solid-20.svg" alt="">
         </button>
       </div>
     </div>
@@ -401,7 +401,7 @@
       <div class="textfield-box">
         <input id="approvalInput" type="text" inputmode="numeric" value="12345678">
         <button class="clear-btn" type="button" aria-label="지우기" onclick="document.getElementById('approvalInput').value=''">
-          <img src="assets/icon-close-circle-solid-20.svg" alt="">
+          <img src="../assets/icon-close-circle-solid-20.svg" alt="">
         </button>
       </div>
     </div>

@@ -2,7 +2,7 @@
   영수증 내역 (Receipt History) 화면
 
   ⚠️ 이번 작업은 Figma를 새로 조회하지 않고, 이 저장소의 docs/design-system/*.md와
-  기존 screen-*.html / assets/만 근거로 구성했다. 각 블록 출처는 "파일명 → 컴포넌트명" 주석으로 표시했다.
+  기존 screen-*.html / ../assets/만 근거로 구성했다. 각 블록 출처는 "파일명 → 컴포넌트명" 주석으로 표시했다.
   문서에 없어서 이번 화면에서만 임의로 정한 값은 "※미정의"로 표시했다.
 
   사용한 컴포넌트 매핑:
@@ -17,7 +17,7 @@
                           동일 스펙 — 거기서 쓴 구현을 그대로 재사용)
     - 처리 상태 안내 모달 → containers-overlays.md → Modal-영수증상태
 
-  아이콘/카드뱃지 에셋은 전부 assets/README.md에 기록된, Figma에서 실제 export한 SVG를 그대로 쓴다.
+  아이콘/카드뱃지 에셋은 전부 ../assets/README.md에 기록된, Figma에서 실제 export한 SVG를 그대로 쓴다.
   상태바 아이콘만 (다른 화면들과 동일하게) canonical node 미확인으로 인라인 SVG 근사치를 쓴다.
 
   데이터: "현재 달"을 2026년 9월로 가정했다(※미정의 — 실제 "오늘" 기준 월은 서비스 연동 시 결정 필요).
@@ -421,11 +421,11 @@
   <div class="rangebox-wrap">
     <button class="rangebox" type="button" onclick="onRangeboxClick()">
       <span class="leading">
-        <img src="assets/icon-calendar-24.svg" alt="">
+        <img src="../assets/icon-calendar-24.svg" alt="">
         <span class="range-text" id="rangeText">26.08.01 ~ 26.09.30</span>
       </span>
       <span class="trailing" onclick="resetRange(event)" role="button" aria-label="기간 초기화">
-        <img src="assets/icon-close-circle-solid-20.svg" alt="">
+        <img src="../assets/icon-close-circle-solid-20.svg" alt="">
       </span>
     </button>
   </div>
@@ -441,7 +441,7 @@
   <div class="meta-row">
     <p class="total-count" id="totalCount">총 0건</p>
     <button class="status-info-btn" type="button" onclick="openStatusModal()">
-      <img src="assets/icon-alert-circle-16.svg" alt="">
+      <img src="../assets/icon-alert-circle-16.svg" alt="">
       상태 안내
     </button>
   </div>
@@ -452,11 +452,11 @@
   <div class="nav-area">
     <div class="nav-bar">
       <button class="nav-item" type="button" onclick="location.href='screen-home.html'">
-        <img src="assets/nav-home-disabled-24.svg" alt="">
+        <img src="../assets/nav-home-disabled-24.svg" alt="">
         <span>홈</span>
       </button>
       <button class="nav-item active" type="button">
-        <img src="assets/nav-list-activated-24.svg" alt="">
+        <img src="../assets/nav-list-activated-24.svg" alt="">
         <span>영수증 내역</span>
       </button>
     </div>
@@ -493,8 +493,8 @@
 
 <script>
   const CARD_ICON = {
-    personal: '<img src="assets/card-personal-light-24.svg" alt="">',
-    corporate: '<img src="assets/card-coporate-light-24.svg" alt="">'
+    personal: '<img src="../assets/card-personal-light-24.svg" alt="">',
+    corporate: '<img src="../assets/card-coporate-light-24.svg" alt="">'
   };
   const STATUS_LABEL = { pending: '대기', processing: '처리중', completed: '완료', rejected: '반려' };
 
