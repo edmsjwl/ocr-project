@@ -1,37 +1,62 @@
-# OCR Design System
 
-OCR 앱·웹의 디자인 시스템과 개발 명세를 관리하는 저장소입니다.
+# SBS OCR Design System
 
-## Documents
+SBS 영수증전자화 서비스의 디자인 시스템 및 UI 구현 명세를 관리하는 저장소입니다.
 
-- DESIGN.md — 구현 명세 목차·표기 규칙 (실제 스펙은 docs/design-system/ 참고)
-- docs/design-system/foundation.md — Color · Typography · Elevation
-- docs/design-system/icon.md — Icon
-- docs/design-system/layout.md — Layout(Grid·Status-bar·Header·Navigation 등)
-- docs/design-system/actions-inputs.md — Button · Textfield · Check-box · Date-picker
-- docs/design-system/containers-overlays.md — Bottom-sheet · Card · Image-input · Modal
-- docs/design-system/display-feedback.md — Badge · Progress · Action-Area
-- CLAUDE.md — Claude Code 작업 규칙
-- Skills.md — UI Design Skill(정보 위계·그룹핑·간격 판단 기준). 아직 `.claude/skills/`에 등록되지 않아 `/ui-design`으로 직접 호출은 안 됨
+Figma 디자인 시스템을 Markdown으로 문서화하여 개발자와 AI 코딩 도구가 일관된 기준으로 UI를 구현할 수 있도록 지원합니다.
 
-## Screens (Prototypes)
+## Overview
 
-docs/design-system/ 스펙을 근거로 만든 정적 HTML 프로토타입입니다. 전부 iOS 375px 프레임 기준이며, `test/` 폴더 아래 모여 있습니다.
+이 저장소는 디자인 토큰, 컴포넌트, 레이아웃 명세와 AI 기반 UI 설계 지침을 제공합니다.
 
-- test/screen-home.html — 메인 홈
-- test/screen-home-v2.html — 메인 홈(재구현판) — screen-home.html과 내용은 동일하나, Figma를 다시 참조하지 않고 docs/design-system/만 근거로 별도로 새로 작성
-- test/screen-mypage.html — 마이페이지
-- test/screen-notifications.html — 알림 내역
-- test/screen-phone-auth.html — 휴대폰 인증(상태 전환 가능한 인터랙티브 프로토타입)
-- test/screen-receipt-history.html — 영수증 내역(월별 조회·상태 필터·처리 상태 안내 모달)
-- test/screen-receipt-detail.html — 영수증 상세내역(반려·대기 상태일 때 삭제·수정하기 CTA 노출)
-- test/screen-receipt-detail-v2.html — 영수증 상세내역(Skills.md "UI Design Skill" 적용판) — 가맹점명·금액을 헤드라인으로 키우고 나머지 필드를 2열 메타 그리드로 압축하는 등 정보 위계 기준으로 레이아웃을 재설계
-- test/screen-receipt-register.html — 영수증 등록(업로드 확인·카드정보·프로그램·적요·가맹점명·승인번호 입력 폼) — 카드 구분 필드를 Dropdown-box 대신 "개인/법인+카드사+뒤4자리"를 한 행에 압축 표시하도록 Skills.md 기준으로 설계
-- test/screen-receipt-register-fail.html — 영수증 등록 실패
-- test/design-system-test.html — 디자인 시스템 컴포넌트 테스트 페이지
+- **Design Specification** — UI 구현을 위한 디자인 시스템 상세 명세
+- **AI Instructions** — Claude Code 작업 규칙 및 UI 설계 판단 기준
+- **Design Source** — [Figma 디자인 원본](https://www.figma.com/design/ese9l01OJiDfirO8Q6XXIY/-SBS--OCR-프로젝트_디자인?node-id=39-2)
+
+## Repository Structure
+
+| 파일 / 폴더 | 역할 |
+|---|---|
+| `README.md` | 프로젝트 소개 및 문서 사용 안내 |
+| `DESIGN.md` | 디자인 시스템 명세 목차 및 참조 가이드 |
+| `CLAUDE.md` | Claude Code 작업 규칙 및 디자인 소스 참조 기준 |
+| `Skills.md` | 정보 구조, 시각적 위계, 레이아웃 등 UI 설계 지침 |
+| `docs/design-system/` | 디자인 토큰·컴포넌트·레이아웃 상세 명세 |
+| `assets/` | 이미지·아이콘 등 디자인 리소스 |
+| `test/` | UI 생성 및 디자인 시스템 검증용 프로토타입 |
+
+## Getting Started
+
+### UI 구현
+
+1. [DESIGN.md](DESIGN.md)에서 디자인 시스템 구조를 확인합니다.
+2. [docs/design-system/](docs/design-system/)에서 필요한 토큰과 컴포넌트 명세를 참조합니다.
+3. 정의된 Variant, State, Layout 규칙에 따라 UI를 구현합니다.
+
+### AI 기반 UI 구현
+
+1. [CLAUDE.md](CLAUDE.md)의 작업 규칙을 따릅니다.
+2. `DESIGN.md`와 `docs/design-system/`의 명세를 기준으로 UI를 구현합니다.
+3. [Skills.md](Skills.md)의 정보 위계 및 레이아웃 설계 지침을 적용합니다.
+4. 신규 UI 생성 시 Figma 화면을 참조하지 않고 문서화된 명세만 사용합니다.
+
+> `Skills.md`는 현재 일반 Markdown 지침이며 Claude Code Skill로 등록되어 있지 않습니다.
+
+## Design Specification
+
+| 문서 | 내용 |
+|---|---|
+| [Foundation](docs/design-system/foundation.md) | Color, Typography, Elevation |
+| [Icon](docs/design-system/icon.md) | Icon |
+| [Layout](docs/design-system/layout.md) | Grid, Status Bar, Header, Navigation |
+| [Actions & Inputs](docs/design-system/actions-inputs.md) | Button, Textfield, Check-box, Date-picker |
+| [Containers & Overlays](docs/design-system/containers-overlays.md) | Bottom-sheet, Card, Image-input, Modal |
+| [Display & Feedback](docs/design-system/display-feedback.md) | Badge, Progress, Action-Area |
 
 ## Source of Truth
 
-Figma → 디자인 원본
-DESIGN.md → 개발 구현 명세
-GitHub → 문서 변경 이력
+- **Figma:** 디자인 시스템 원본 및 문서 갱신 기준
+- **docs/design-system/:** UI 구현을 위한 상세 명세
+- **CLAUDE.md / Skills.md:** AI 작업 규칙 및 UI 설계 기준
+
+디자인 시스템 명세가 누락되거나 불명확한 경우 임의의 값을 생성하지 않고 확인이 필요한 항목으로 기록합니다.

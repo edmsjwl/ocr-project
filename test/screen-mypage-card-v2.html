@@ -1,0 +1,639 @@
+<!--
+  마이페이지 — 내 카드 등록·관리 기능 포함판 (v2, 재검증 버전)
+
+  이전 버전(screen-mypage-card.html)에서 "버튼/메뉴 영역이 이상하다, 높이가 너무 낮다"는
+  피드백을 받았다. 코드를 다시 꼼꼼히 훑었지만 명확한 레이아웃 붕괴 버그(예: 이전에 실제로
+  있었던 flexbox+overflow 크러시 버그)는 재현되지 않았고, 모든 버튼 클래스에 border/background/
+  padding이 개별적으로 지정돼 있어 CSS 명세상 특정 지점이 "틀렸다"고 확정할 수 없었다.
+  → Skills.md §7 "렌더링을 확인하지 못한 경우 시각적 검증 완료로 보고하지 않는다" 원칙에 따라,
+    이 파일은 "원인을 특정해 고친 버전"이 아니라 "네이티브 폼 컨트롤 잔존 스타일을 더 강하게
+    제거하고, 전 컴포넌트를 Skills.md §7 체크리스트로 재검증한 버전"이다. 여전히 문제가 보이면
+    스크린샷으로 어느 요소인지 짚어달라고 요청해야 한다.
+
+  ── 이번에 추가한 방어적 리셋 (이전 버전 대비) ──
+  - 전역 button/input 리셋에 border:0, background:none, line-height:normal, min-height:0 추가
+    (이전 버전은 border/background를 클래스별로만 지정해서, 이론상 빠짐이 있으면 네이티브
+    스타일이 새어나올 수 있었다 — screen-receipt-register.html에서 실제로 겪었던 네이티브 폼
+    컨트롤 버그의 재발 방지 차원에서 더 넓게 리셋했다.)
+  - Firefox `::-moz-focus-inner` 잔여 패딩 제거 추가.
+
+  ── Skills.md §7 체크리스트 재검증 결과 ──
+  - 사용한 컴포넌트가 화면 역할/상호작용에 적합한가: 리스트형 그룹(menu-group) 재사용, 상태 표시는
+    Content-badge, 조작은 Button-text로 역할 분리 — 적합하다고 판단.
+  - 컴포넌트별 높이/패딩/Variant/State가 명세와 일치하는가: Category-badge(Round) padding X8/Y3
+    radius999, Dropdown-box H56/radius16, Button-chip-filter H36/padding X12·Y8/radius10,
+    Textfield Container H56/radius16/padding12, Action-area 버튼 H52/radius14 — 전부
+    docs/design-system/ 수치와 그대로 일치시켰다(코드 재확인함).
+  - 모든 인터랙티브 요소의 터치 영역을 확인했는가 → ⚠️ 명세 충돌 발견, 아래 "충돌 사항" 참고.
+
+  ── Skills.md §6 "명세 우선순위 및 누락 대응" — 충돌 사항 보고 (임의로 결정하지 않음) ──
+  - Button-chip-filter(개인/법인, 대표 카드 토글)는 actions-inputs.md 명세상 H36이다. Skills.md
+    §3 터치 영역 기준(최소 44×44pt)과 충돌한다. 컴포넌트 명세를 그대로 따르고 높이를 임의로
+    44px로 늘리지 않았다 — 터치 영역을 늘려야 한다면 디자인 시스템 쪽에서 Button-chip-filter
+    자체의 명세를 먼저 바꿔야 할 문제라고 판단해서다.
+  - "대표로 설정"/"삭제" Button-text는 actions-inputs.md 명세상 Padding·Radius·Border가 없는
+    content-fit 텍스트 버튼이라 시각적 크기가 44pt보다 작다. 마찬가지로 임의로 패딩을 추가해
+    터치 영역만 키우지 않았다 — 같은 충돌로 보고한다.
+  → 두 항목 모두 "디자인 시스템 명세를 그대로 따르되, 터치 영역 기준과 충돌한다"는 사실만
+    남기고 임의 결정하지 않았다. 실제 서비스에 넣을 때는 기획/디자인 쪽 확인이 필요하다.
+
+  그 외 내용(카드 추가 Bottom-sheet 구성, 컴포넌트 매핑, 미확인 사항)은 이전 버전과 동일하다 —
+  자세한 설계 근거는 test/screen-mypage-card.html 상단 주석 참고.
+-->
+<title>마이페이지 — 내 카드 관리(v2)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root {
+    --bg-alternative: #f1f3f4;
+    --bg-secondary: #ffffff;
+    --bg-inverse: #434648;
+    --label-primary-normal: #222426;
+    --label-primary-weak: #babec2;
+    --label-secondary-normal: #434648;
+    --label-secondary-selected: #8c9499;
+    --label-secondary-weak: #a2a9ae;
+    --label-brand-normal: #2a7fec;
+    --status-rejected-normal: #f44336;
+    --clear-blue-5: #eff8ff;
+    --cool-neutral-10: #f1f3f4;
+    --foreground-normal-weak: #f1f3f4;
+    --foreground-normal-normal: #f7f8f9;
+    --line-normal-normal: rgba(87, 94, 98, 0.24);
+    --line-normal-neutral: rgba(87, 94, 98, 0.16);
+    --line-normal-alternative: rgba(87, 94, 98, 0.08);
+    --line-brand-normal: #2a7fec;
+    --dimmer-weak: rgba(0, 0, 0, 0.32);
+    --nav-pill-bg: #ebeef0;
+    --nav-item-selected-bg: #f7f8f9;
+  }
+
+  * { box-sizing: border-box; }
+
+  /* 네이티브 폼 컨트롤 잔존 스타일 방어적 리셋 — 이전 버전보다 넓게:
+     border/background/line-height/min-height까지 전역으로 0·none·normal 처리해서,
+     개별 클래스가 뭔가를 빠뜨려도 브라우저 기본 버튼 모양(높이·배경·테두리)이 새어나오지 않게 한다. */
+  button, input {
+    font-family: inherit;
+    color: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    line-height: normal;
+    min-height: 0;
+  }
+  button::-moz-focus-inner { border: 0; padding: 0; }
+
+  body {
+    margin: 0;
+    padding: 40px 16px;
+    background: #e3e6e8;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+  }
+
+  .frame {
+    position: relative;
+    width: 375px;
+    height: 812px;
+    background: var(--bg-alternative);
+    overflow: hidden;
+    border-radius: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---- Status bar — layout.md → Status-bar ---- */
+  .status-bar {
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    background: var(--bg-alternative);
+  }
+  .status-bar .time { font: 600 15px/1 'Pretendard'; color: var(--label-primary-normal); }
+  .status-bar .icons { display: flex; align-items: center; gap: 6px; }
+
+  /* ---- Header — layout.md → Header ---- */
+  .header {
+    height: 56px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 20px;
+    background: var(--bg-alternative);
+  }
+  .header h1 {
+    margin: 0;
+    font: 700 20px/28px 'Pretendard';
+    letter-spacing: -0.08px;
+    color: var(--label-primary-normal);
+  }
+
+  .body { flex: 1; overflow-y: auto; padding: 10px 16px; display: flex; flex-direction: column; gap: 16px; }
+  .body > * { flex-shrink: 0; }
+
+  /* ---- 프로필 카드 ---- */
+  .profile-card {
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    box-shadow: 0 0 1.5px rgba(134, 134, 134, 0.04);
+    padding: 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .avatar {
+    width: 56px; height: 56px; border-radius: 999px; background: var(--label-brand-normal);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font: 700 18px/1 'Pretendard'; flex-shrink: 0;
+  }
+  .profile-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .profile-info .name { font: 600 18px/26px 'Pretendard'; letter-spacing: -0.054px; color: var(--label-primary-normal); }
+  .profile-info .team { font: 500 15px/22px 'Pretendard'; letter-spacing: -0.045px; color: var(--label-secondary-normal); }
+  .profile-edit {
+    flex-shrink: 0; cursor: pointer;
+    font: 600 14px/20px 'Pretendard'; letter-spacing: -0.042px; color: var(--label-brand-normal);
+    /* Button-text(XS) 명세상 padding 없음 — Skills.md §6에 따라 임의로 패딩을 넣어 터치영역을
+       늘리지 않았다(§3 터치영역 기준과 충돌, 상단 주석 "충돌 사항" 참고) */
+  }
+
+  /* ---- 그룹 컨테이너(menu-group) ---- */
+  .menu-group {
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    box-shadow: 0 0 1.5px rgba(134, 134, 134, 0.04);
+    overflow: hidden;
+  }
+
+  /* ---- 섹션 헤더(라벨+카드수 / 추가 버튼) ---- */
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px 8px;
+    min-height: 32px; /* 라벨+버튼 중 더 큰 요소가 눌리지 않도록 최소 높이 확보 — 명세 외 보강값 */
+  }
+  .section-header .label {
+    font: 600 12px/18px 'Pretendard'; letter-spacing: -0.2px; color: var(--label-secondary-selected);
+  }
+  .section-header .add-btn {
+    cursor: pointer;
+    font: 600 14px/20px 'Pretendard'; letter-spacing: -0.042px; color: var(--label-brand-normal);
+  }
+
+  /* ---- 카드 행(menu-row와 동일 padding/divider 리듬) ---- */
+  .card-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    min-height: 56px; /* Dropdown-box 등 입력형 컴포넌트와 동일한 리스트 행 높이로 통일 */
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line-normal-alternative);
+  }
+  .card-row:last-child { border-bottom: none; }
+  .card-row-main { display: flex; align-items: center; gap: 8px; min-width: 0; }
+
+  /* ---- Category-badge(Round) — display-feedback.md 토큰 그대로 ---- */
+  .category-badge {
+    flex-shrink: 0;
+    display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 999px;
+    font: 600 13px/19px 'Pretendard'; letter-spacing: -0.026px;
+  }
+  .category-badge.personal { background: var(--clear-blue-5); color: var(--label-primary-normal); }
+  .category-badge.corporate { background: var(--cool-neutral-10); color: var(--label-secondary-normal); }
+
+  .card-row-main .card-text {
+    font: 500 16px/24px 'Pretendard'; letter-spacing: -0.048px; color: var(--label-primary-normal);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  .card-row-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+
+  /* ---- 대표 배지 — display-feedback.md → Content-badge(Color=Black) ---- */
+  .default-tag {
+    padding: 3px 6px; border-radius: 8px; background: var(--foreground-normal-weak);
+    color: #575e62; font: 600 13px/19px 'Pretendard'; letter-spacing: -0.026px; white-space: nowrap;
+  }
+
+  /* ---- Button-text(XS) — actions-inputs.md 명세 그대로(패딩 없음) ---- */
+  .btn-text {
+    cursor: pointer; white-space: nowrap;
+    font: 600 14px/20px 'Pretendard'; letter-spacing: -0.042px; color: var(--label-secondary-normal);
+  }
+  .btn-text.danger { color: var(--status-rejected-normal); }
+
+  .card-empty {
+    padding: 24px 16px; text-align: center;
+    font: 500 15px/22px 'Pretendard'; letter-spacing: -0.045px; color: var(--label-secondary-selected);
+  }
+
+  .menu-row {
+    display: flex; align-items: center; justify-content: space-between; width: 100%;
+    min-height: 52px;
+    padding: 14px 16px; cursor: pointer; text-align: left;
+    border-bottom: 1px solid var(--line-normal-alternative);
+  }
+  .menu-row:last-child { border-bottom: none; }
+  .menu-row .label { font: 500 16px/24px 'Pretendard'; letter-spacing: -0.048px; color: var(--label-primary-normal); }
+  .menu-row.danger .label { color: var(--status-rejected-normal); }
+  .menu-row .right { display: flex; align-items: center; gap: 6px; }
+  .menu-row .meta { font: 500 15px/22px 'Pretendard'; letter-spacing: -0.045px; color: var(--label-secondary-weak); }
+  .menu-row img { width: 20px; height: 20px; display: block; }
+
+  /* ---- 하단 Nav ---- */
+  .nav-area { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
+  .nav-bar {
+    background: var(--nav-pill-bg); height: 69px; border-radius: 999px; padding: 6px;
+    display: flex; align-items: center;
+    box-shadow: 1px 3px 3px rgba(69, 81, 90, 0.09), 3px 7px 5px rgba(69, 81, 90, 0.03),
+                5px 13px 6px rgba(69, 81, 90, 0.01), -1px -1px 10px rgba(69, 81, 90, 0.04);
+  }
+  .nav-item {
+    width: 100px; height: 57px; border-radius: 999px; padding: 2px 20px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    cursor: pointer; font-family: 'Pretendard';
+  }
+  .nav-item.active { background: var(--nav-item-selected-bg); }
+  .nav-item span { font: 700 13px/19px 'Pretendard'; letter-spacing: -0.026px; }
+  .nav-item.active span { color: var(--label-primary-normal); }
+  .nav-item:not(.active) span { color: var(--label-secondary-weak); }
+  .nav-item img { width: 24px; height: 24px; display: block; }
+  .home-bar { display: flex; justify-content: center; padding: 16px 10px 6px; width: 100%; }
+  .home-bar .slider { width: 134px; height: 5px; border-radius: 4px; background: var(--bg-inverse); }
+
+  /* =========================================================
+     카드 추가 Bottom-sheet
+     ========================================================= */
+  .dim {
+    position: absolute; inset: 0; background: var(--dimmer-weak);
+    display: none; align-items: flex-end; justify-content: center; z-index: 10;
+  }
+  .dim.show { display: flex; }
+
+  .sheet {
+    width: 100%; max-height: 640px; overflow-y: auto;
+    background: var(--bg-secondary);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 0 5px rgba(134, 134, 134, 0.32);
+    padding: 20px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .sheet-head { display: flex; align-items: center; justify-content: space-between; }
+  .sheet-head .title {
+    font: 700 18px/26px 'Pretendard'; letter-spacing: -0.054px; color: var(--label-primary-normal);
+  }
+  .sheet-head .close-btn { cursor: pointer; display: flex; width: 44px; height: 44px; align-items: center; justify-content: center; margin: -10px; }
+  .sheet-head .close-btn img { width: 24px; height: 24px; display: block; }
+
+  .sheet-field { display: flex; flex-direction: column; gap: 8px; }
+  .sheet-field .field-heading {
+    padding: 0 4px; font: 700 15px/22px 'Pretendard'; letter-spacing: -0.045px; color: var(--label-secondary-normal);
+  }
+  .sheet-field .required { color: var(--status-rejected-normal); margin-left: 2px; }
+
+  /* ---- Button-chip-filter — actions-inputs.md 명세 그대로(H36) ----
+     ⚠️ Skills.md §3 터치영역 기준(44×44pt)과 충돌 — 상단 주석 "충돌 사항" 참고, 임의로 늘리지 않음 */
+  .chip-row { display: flex; gap: 8px; }
+  .chip {
+    height: 36px; padding: 8px 12px; border-radius: 10px; cursor: pointer;
+    font: 500 15px/22px 'Pretendard'; letter-spacing: -0.045px;
+    background: var(--foreground-normal-normal); color: var(--label-primary-weak);
+  }
+  .chip.selected {
+    background: var(--bg-inverse); color: #ffffff; font-weight: 600;
+  }
+
+  /* ---- Dropdown-box — actions-inputs.md 토큰 그대로(H56) ---- */
+  .dropdown-wrap { position: relative; }
+  .dropdown-box {
+    width: 100%; height: 56px; border-radius: 16px; padding: 12px;
+    border: 1px solid var(--line-normal-normal); background: var(--bg-secondary);
+    display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+  }
+  .dropdown-box.open { border-color: var(--line-brand-normal); }
+  .dropdown-box .value {
+    font: 500 16px/24px 'Pretendard'; letter-spacing: -0.048px; color: var(--label-primary-normal);
+  }
+  .dropdown-box .value.placeholder { color: var(--label-primary-weak); font-weight: 500; }
+  .dropdown-box img { width: 20px; height: 20px; display: block; transition: transform 0.15s ease; }
+  .dropdown-box.open img { transform: rotate(180deg); }
+
+  .dropdown-list {
+    position: absolute; top: calc(100% + 4px); left: 0; width: 100%;
+    max-height: 200px; overflow-y: auto;
+    background: var(--bg-secondary); border: 1px solid var(--line-brand-normal); border-radius: 16px;
+    box-shadow: 0 0 10px rgba(134, 134, 134, 0.32);
+    display: none; z-index: 5;
+  }
+  .dropdown-list.show { display: block; }
+  .dropdown-item {
+    height: 56px; padding: 12px; display: flex; align-items: center; cursor: pointer;
+  }
+  .dropdown-item .text {
+    padding: 0 4px; font: 400 16px/24px 'Pretendard'; letter-spacing: -0.048px; color: var(--label-primary-weak);
+  }
+  .dropdown-item.selected { background: var(--clear-blue-5); border-radius: 10px; }
+  .dropdown-item.selected .text { color: var(--label-primary-normal); font-weight: 500; }
+
+  /* ---- Textfield — actions-inputs.md 토큰 그대로(H56) ---- */
+  .textfield-box {
+    height: 56px; border-radius: 16px; padding: 12px;
+    border: 1px solid var(--line-normal-normal); background: var(--bg-secondary);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .textfield-box.active { border-color: var(--line-brand-normal); }
+  .textfield-box input {
+    flex: 1; min-width: 0;
+    font: 500 16px/24px 'Pretendard'; letter-spacing: -0.048px; color: var(--label-primary-normal);
+  }
+  .textfield-box input::placeholder { color: var(--label-primary-weak); }
+
+  /* ---- Action-area(White/Two-button/Normal) — display-feedback.md 토큰 그대로(H52) ---- */
+  .sheet-actions { display: flex; gap: 10px; }
+  .sheet-actions button {
+    flex: 1; height: 52px; border-radius: 14px; cursor: pointer;
+    font: 600 16px/24px 'Pretendard'; letter-spacing: -0.048px;
+  }
+  .sheet-actions .btn-alt {
+    background: #ffffff; border: 1px solid var(--line-normal-normal); color: var(--label-secondary-normal);
+  }
+  .sheet-actions .btn-main {
+    background: var(--label-brand-normal); color: #ffffff;
+  }
+  .sheet-actions .btn-main:disabled { background: #dee3e7; color: #ffffff; cursor: not-allowed; }
+</style>
+
+<div class="frame">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <span class="icons">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="#222426"/><rect x="5" y="5" width="3" height="7" rx="0.5" fill="#222426"/><rect x="10" y="3" width="3" height="9" rx="0.5" fill="#222426"/><rect x="15" y="0" width="3" height="12" rx="0.5" fill="#222426"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 10.2C8.66 10.2 9.2 9.66 9.2 9C9.2 8.34 8.66 7.8 8 7.8C7.34 7.8 6.8 8.34 6.8 9C6.8 9.66 7.34 10.2 8 10.2Z" fill="#222426"/><path d="M4.6 6.6C5.5 5.7 6.7 5.2 8 5.2C9.3 5.2 10.5 5.7 11.4 6.6" stroke="#222426" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M1.8 3.8C3.5 2.1 5.7 1.2 8 1.2C10.3 1.2 12.5 2.1 14.2 3.8" stroke="#222426" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="2.5" stroke="#222426"/><rect x="2" y="2" width="18" height="8" rx="1.5" fill="#222426"/><rect x="22.5" y="4" width="1.5" height="4" rx="0.7" fill="#222426"/></svg>
+    </span>
+  </div>
+
+  <div class="header"><h1>마이페이지</h1></div>
+
+  <div class="body">
+    <div class="profile-card">
+      <div class="avatar">김OO</div>
+      <div class="profile-info">
+        <span class="name">김은지</span>
+        <span class="team">SBS 예능국 · 개인카드</span>
+      </div>
+      <button class="profile-edit" type="button">수정</button>
+    </div>
+
+    <div class="menu-group">
+      <div class="section-header">
+        <span class="label" id="cardCountLabel">내 카드 · 2개</span>
+        <button class="add-btn" type="button" onclick="openAddCard()">카드 추가</button>
+      </div>
+      <div id="cardList"><!-- JS로 렌더링 --></div>
+    </div>
+
+    <div class="menu-group">
+      <div class="section-header" style="padding-bottom:4px;"><span class="label">계정</span></div>
+      <button class="menu-row" type="button">
+        <span class="label">계정 정보 관리</span>
+        <img src="../assets/icon-chevron-right-20.svg" alt="">
+      </button>
+      <button class="menu-row" type="button">
+        <span class="label">알림 설정</span>
+        <img src="../assets/icon-chevron-right-20.svg" alt="">
+      </button>
+    </div>
+
+    <div class="menu-group">
+      <div class="section-header" style="padding-bottom:4px;"><span class="label">고객지원</span></div>
+      <button class="menu-row" type="button">
+        <span class="label">공지사항</span>
+        <img src="../assets/icon-chevron-right-20.svg" alt="">
+      </button>
+      <button class="menu-row" type="button">
+        <span class="label">자주 묻는 질문</span>
+        <img src="../assets/icon-chevron-right-20.svg" alt="">
+      </button>
+      <button class="menu-row" type="button">
+        <span class="label">버전 정보</span>
+        <span class="right"><span class="meta">1.0.0</span></span>
+      </button>
+    </div>
+
+    <div class="menu-group">
+      <button class="menu-row danger" type="button">
+        <span class="label">로그아웃</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="nav-area">
+    <div class="nav-bar">
+      <button class="nav-item" type="button">
+        <img src="../assets/nav-home-disabled-24.svg" alt="">
+        <span>홈</span>
+      </button>
+      <button class="nav-item" type="button">
+        <img src="../assets/nav-list-disabled-24.svg" alt="">
+        <span>영수증 내역</span>
+      </button>
+    </div>
+    <div class="home-bar"><div class="slider"></div></div>
+  </div>
+
+  <!-- 카드 추가 Bottom-sheet -->
+  <div class="dim" id="dim" onclick="if(event.target===this) closeAddCard()">
+    <div class="sheet">
+      <div class="sheet-head">
+        <span class="title">카드 추가</span>
+        <button class="close-btn" type="button" aria-label="닫기" onclick="closeAddCard()">
+          <img src="../assets/icon-close-24.svg" alt="">
+        </button>
+      </div>
+
+      <div class="sheet-field">
+        <span class="field-heading">카드 구분<span class="required">*</span></span>
+        <div class="chip-row">
+          <button class="chip" type="button" id="chipPersonal" onclick="selectCardType('personal')">개인</button>
+          <button class="chip" type="button" id="chipCorporate" onclick="selectCardType('corporate')">법인</button>
+        </div>
+      </div>
+
+      <div class="sheet-field">
+        <span class="field-heading">카드사<span class="required">*</span></span>
+        <div class="dropdown-wrap">
+          <button class="dropdown-box" type="button" id="issuerBox" onclick="toggleIssuerList()">
+            <span class="value placeholder" id="issuerValue">카드사를 선택해 주세요.</span>
+            <img src="../assets/icon-chevron-down-20.svg" alt="">
+          </button>
+          <div class="dropdown-list" id="issuerList">
+            <div class="dropdown-item" data-value="신한카드" onclick="selectIssuer('신한카드')"><span class="text">신한카드</span></div>
+            <div class="dropdown-item" data-value="국민카드" onclick="selectIssuer('국민카드')"><span class="text">국민카드</span></div>
+            <div class="dropdown-item" data-value="삼성카드" onclick="selectIssuer('삼성카드')"><span class="text">삼성카드</span></div>
+            <div class="dropdown-item" data-value="현대카드" onclick="selectIssuer('현대카드')"><span class="text">현대카드</span></div>
+            <div class="dropdown-item" data-value="롯데카드" onclick="selectIssuer('롯데카드')"><span class="text">롯데카드</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sheet-field">
+        <label class="field-heading" for="last4Input">카드번호 뒤 4자리<span class="required">*</span></label>
+        <div class="textfield-box" id="last4Shell">
+          <input id="last4Input" type="tel" inputmode="numeric" maxlength="4" placeholder="0000" oninput="onLast4Input()">
+        </div>
+      </div>
+
+      <div class="sheet-field">
+        <span class="field-heading">대표 카드</span>
+        <div class="chip-row">
+          <button class="chip" type="button" id="chipDefault" onclick="toggleDefaultChip()">대표 카드로 설정</button>
+        </div>
+      </div>
+
+      <div class="sheet-actions">
+        <button class="btn-alt" type="button" onclick="closeAddCard()">취소</button>
+        <button class="btn-main" type="button" id="submitAddCard" disabled onclick="submitAddCard()">등록</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let cards = [
+    { type: 'personal', issuer: '신한카드', last4: '1234', isDefault: true },
+    { type: 'corporate', issuer: '국민카드', last4: '5678', isDefault: false }
+  ];
+
+  function renderCards() {
+    const list = document.getElementById('cardList');
+    const countLabel = document.getElementById('cardCountLabel');
+    countLabel.textContent = `내 카드 · ${cards.length}개`;
+
+    if (cards.length === 0) {
+      list.innerHTML = '<div class="card-empty">등록된 카드가 없습니다. 카드를 추가해 주세요.</div>';
+      return;
+    }
+
+    list.innerHTML = cards.map((card, i) => {
+      const typeLabel = card.type === 'personal' ? '개인' : '법인';
+      const badgeClass = card.type === 'personal' ? 'personal' : 'corporate';
+      const rightHtml = card.isDefault
+        ? `<span class="default-tag">대표</span><button class="btn-text danger" type="button" onclick="deleteCard(${i})">삭제</button>`
+        : `<button class="btn-text" type="button" onclick="setDefaultCard(${i})">대표로 설정</button><button class="btn-text danger" type="button" onclick="deleteCard(${i})">삭제</button>`;
+
+      return `
+        <div class="card-row">
+          <div class="card-row-main">
+            <span class="category-badge ${badgeClass}">${typeLabel}</span>
+            <span class="card-text">${card.issuer} · •••• ${card.last4}</span>
+          </div>
+          <div class="card-row-actions">${rightHtml}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function setDefaultCard(index) {
+    cards.forEach((c, i) => { c.isDefault = (i === index); });
+    renderCards();
+  }
+
+  function deleteCard(index) {
+    const wasDefault = cards[index].isDefault;
+    cards.splice(index, 1);
+    if (wasDefault && cards.length > 0) cards[0].isDefault = true;
+    renderCards();
+  }
+
+  renderCards();
+
+  const dim = document.getElementById('dim');
+  const chipPersonal = document.getElementById('chipPersonal');
+  const chipCorporate = document.getElementById('chipCorporate');
+  const chipDefault = document.getElementById('chipDefault');
+  const issuerBox = document.getElementById('issuerBox');
+  const issuerValue = document.getElementById('issuerValue');
+  const issuerList = document.getElementById('issuerList');
+  const last4Input = document.getElementById('last4Input');
+  const last4Shell = document.getElementById('last4Shell');
+  const submitAddCard = document.getElementById('submitAddCard');
+
+  let draft = { type: null, issuer: null, last4: '', isDefault: false };
+
+  function openAddCard() {
+    draft = { type: null, issuer: null, last4: '', isDefault: false };
+    chipPersonal.classList.remove('selected');
+    chipCorporate.classList.remove('selected');
+    chipDefault.classList.remove('selected');
+    issuerValue.textContent = '카드사를 선택해 주세요.';
+    issuerValue.classList.add('placeholder');
+    issuerBox.classList.remove('open');
+    issuerList.classList.remove('show');
+    last4Input.value = '';
+    updateSubmitState();
+    dim.classList.add('show');
+  }
+
+  function closeAddCard() {
+    dim.classList.remove('show');
+    issuerList.classList.remove('show');
+    issuerBox.classList.remove('open');
+  }
+
+  function selectCardType(type) {
+    draft.type = type;
+    chipPersonal.classList.toggle('selected', type === 'personal');
+    chipCorporate.classList.toggle('selected', type === 'corporate');
+    updateSubmitState();
+  }
+
+  function toggleIssuerList() {
+    const willShow = !issuerList.classList.contains('show');
+    issuerList.classList.toggle('show', willShow);
+    issuerBox.classList.toggle('open', willShow);
+  }
+
+  function selectIssuer(name) {
+    draft.issuer = name;
+    issuerValue.textContent = name;
+    issuerValue.classList.remove('placeholder');
+    issuerList.querySelectorAll('.dropdown-item').forEach(el => {
+      el.classList.toggle('selected', el.dataset.value === name);
+    });
+    issuerList.classList.remove('show');
+    issuerBox.classList.remove('open');
+    updateSubmitState();
+  }
+
+  function onLast4Input() {
+    last4Input.value = last4Input.value.replace(/\D/g, '').slice(0, 4);
+    draft.last4 = last4Input.value;
+    last4Shell.classList.toggle('active', last4Input.value.length > 0);
+    updateSubmitState();
+  }
+
+  function toggleDefaultChip() {
+    draft.isDefault = !draft.isDefault;
+    chipDefault.classList.toggle('selected', draft.isDefault);
+  }
+
+  function updateSubmitState() {
+    const ready = draft.type && draft.issuer && draft.last4.length === 4;
+    submitAddCard.disabled = !ready;
+  }
+
+  function submitAddCard() {
+    if (submitAddCard.disabled) return;
+    if (draft.isDefault) cards.forEach(c => { c.isDefault = false; });
+    cards.push({ type: draft.type, issuer: draft.issuer, last4: draft.last4, isDefault: draft.isDefault || cards.length === 0 });
+    renderCards();
+    closeAddCard();
+  }
+</script>
